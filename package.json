@@ -1,0 +1,35 @@
+{
+  "name": "longteng-bridge-guide",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro check && astro build && wrangler pages dev --port 8791",
+    "dev:astro": "astro dev",
+    "dev:cloudflare": "astro check && astro build && wrangler pages dev --port 8791",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "deploy": "pnpm build && wrangler pages deploy"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "@tailwindcss/vite": "^4.1.0",
+    "astro": "^5.12.0",
+    "sharp": "^0.34.0",
+    "tailwindcss": "^4.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.0",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.114.0"
+  },
+  "packageManager": "pnpm@10.13.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "workerd",
+      "sharp"
+    ]
+  }
+}
