@@ -1,0 +1,49 @@
+---
+interface Props {
+  compact?: boolean;
+  light?: boolean;
+}
+
+const { compact = false, light = false } = Astro.props;
+---
+
+<a
+  href="/"
+  class:list={[
+    "group inline-flex items-center gap-3 no-underline",
+    light ? "text-white" : "text-ink",
+  ]}
+  aria-label="Longteng Bridge 龍騰斷橋指南首頁"
+>
+  <svg
+    class="h-10 w-12 shrink-0 text-brick-600 transition-transform duration-300 group-hover:-translate-y-0.5"
+    viewBox="0 0 54 42"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M3 34V23C3 13.6 10.6 6 20 6h2v8h-2a9 9 0 0 0-9 9v11H3Zm48 0V23c0-9.4-7.6-17-17-17h-2v8h2a9 9 0 0 1 9 9v11h8Z"
+      fill="currentColor"
+    />
+    <path d="M20 5h5v9h-5zM29 5h5v9h-5z" fill="currentColor" opacity=".55" />
+    <path
+      d="M2 37h50M8 40l4-3m2 3 4-3m18 3 4-3m2 3 4-3"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+    />
+  </svg>
+  <span class:list={["leading-none", compact && "hidden sm:block"]}>
+    <span class="block text-[0.71rem] font-black tracking-[0.17em] uppercase">
+      Longteng Bridge
+    </span>
+    <span
+      class:list={[
+        "mt-1 block text-sm font-semibold tracking-[0.08em]",
+        light ? "text-white/70" : "text-stone",
+      ]}
+    >
+      龍騰斷橋指南
+    </span>
+  </span>
+</a>

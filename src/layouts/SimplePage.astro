@@ -1,0 +1,41 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import Icon from "../components/Icon.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+}
+
+const { title, description, eyebrow } = Astro.props;
+---
+
+<BaseLayout title={title} description={description}>
+  <header class="section-shell pt-12 sm:pt-20">
+    <nav
+      class="mb-8 flex items-center gap-2 text-xs font-bold text-stone"
+      aria-label="麵包屑"
+    >
+      <a href="/" class="hover:text-brick-700">首頁</a>
+      <Icon name="chevron" size={13} />
+      <span>{eyebrow}</span>
+    </nav>
+    <span class="eyebrow">{eyebrow}</span>
+    <h1
+      class="editorial-title mt-5 max-w-4xl text-[clamp(2.8rem,7vw,5.5rem)] font-bold leading-[0.96] text-ink"
+    >
+      {title}
+    </h1>
+    <p class="mt-6 max-w-3xl text-base leading-8 text-stone sm:text-lg">
+      {description}
+    </p>
+  </header>
+  <div class="section-shell mt-12">
+    <div class="max-w-3xl rounded-[2rem] border border-black/8 bg-white/72 p-6 shadow-soft sm:p-10">
+      <div class="prose-content">
+        <slot />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

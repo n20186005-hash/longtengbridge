@@ -1,0 +1,55 @@
+---
+import Logo from "./Logo.astro";
+import Icon from "./Icon.astro";
+import { NAV, SITE } from "../data/site";
+---
+
+<footer class="mt-24 bg-forest-700 text-white">
+  <div class="section-shell grid gap-12 py-16 md:grid-cols-[1.15fr_1fr_1fr]">
+    <div>
+      <Logo light />
+      <p class="mt-6 max-w-sm text-sm leading-7 text-white/68">
+        從紅磚斷橋出發，整理舊山線鐵道自行車、勝興車站與三義旅程，讓每一次出發都更從容。
+      </p>
+      <a
+        href={SITE.mapUrl}
+        target="_blank"
+        rel="noopener"
+        class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2.5 text-sm font-bold transition hover:bg-white hover:text-forest-700"
+      >
+        <Icon name="map" size={17} />
+        Google 地圖導航
+      </a>
+    </div>
+
+    <div>
+      <p class="text-xs font-black tracking-[0.16em] text-white/70 uppercase">
+        規劃旅程
+      </p>
+      <nav class="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 text-sm" aria-label="頁尾導覽">
+        {NAV.map((item) => <a class="text-white/75 hover:text-white" href={item.href}>{item.label}</a>)}
+        <a class="text-white/75 hover:text-white" href="/parking/">停車指南</a>
+        <a class="text-white/75 hover:text-white" href="/family-guide/">親子長輩</a>
+      </nav>
+    </div>
+
+    <div>
+      <p class="text-xs font-black tracking-[0.16em] text-white/70 uppercase">
+        站點資訊
+      </p>
+      <nav class="mt-5 grid gap-3 text-sm" aria-label="站點資訊">
+        <a class="text-white/75 hover:text-white" href="/about/">關於本站</a>
+        <a class="text-white/75 hover:text-white" href="/sources/">資料與圖片來源</a>
+        <a class="text-white/75 hover:text-white" href="/updates/">資訊更新原則</a>
+        <a class="text-white/75 hover:text-white" href="/privacy/">隱私政策</a>
+      </nav>
+    </div>
+  </div>
+  <div class="border-t border-white/10">
+    <div
+      class="section-shell flex flex-col gap-2 py-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p>© {new Date().getFullYear()} Longteng Bridge</p>
+    </div>
+  </div>
+</footer>

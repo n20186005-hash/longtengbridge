@@ -1,0 +1,100 @@
+---
+import Icon from "./Icon.astro";
+---
+
+<section
+  id="route-chooser"
+  class="rounded-[2rem] bg-forest-700 p-6 text-white shadow-soft sm:p-9"
+>
+  <div class="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+    <div>
+      <span class="inline-flex items-center gap-2 text-xs font-black tracking-[0.16em] text-white/70 uppercase">
+        <Icon name="sparkle" size={16} />
+        30 秒選路線
+      </span>
+      <h2 class="editorial-title mt-4 text-3xl font-bold sm:text-4xl">
+        你最想看到什麼？
+      </h2>
+      <p class="mt-4 max-w-md text-sm leading-7 text-white/70">
+        選一個旅行重點，我們會直接給你優先查看的路線。實際營運與可預約班次仍以訂票頁為準。
+      </p>
+    </div>
+
+    <div class="rounded-2xl bg-white p-4 text-ink sm:p-5">
+      <div class="grid gap-2 sm:grid-cols-2" role="group" aria-label="選擇路線偏好">
+        <button
+          type="button"
+          data-choice="south"
+          class="route-choice rounded-xl border border-black/8 bg-cream px-4 py-3 text-left text-sm font-bold transition hover:border-brick-500 hover:bg-brick-50"
+        >
+          看南斷橋與鐵橋
+        </button>
+        <button
+          type="button"
+          data-choice="street"
+          class="route-choice rounded-xl border border-black/8 bg-cream px-4 py-3 text-left text-sm font-bold transition hover:border-brick-500 hover:bg-brick-50"
+        >
+          逛勝興車站老街
+        </button>
+        <button
+          type="button"
+          data-choice="tunnel"
+          class="route-choice rounded-xl border border-black/8 bg-cream px-4 py-3 text-left text-sm font-bold transition hover:border-brick-500 hover:bg-brick-50"
+        >
+          喜歡隧道與山景
+        </button>
+        <button
+          type="button"
+          data-choice="easy"
+          class="route-choice rounded-xl border border-black/8 bg-cream px-4 py-3 text-left text-sm font-bold transition hover:border-brick-500 hover:bg-brick-50"
+        >
+          行程單純、好銜接
+        </button>
+      </div>
+      <div
+        id="route-result"
+        class="mt-4 flex min-h-24 items-center gap-4 rounded-xl bg-brick-600 p-4 text-white"
+        aria-live="polite"
+      >
+        <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15">
+          <Icon name="route" size={20} />
+        </span>
+        <p class="text-sm leading-6">
+          選擇一項偏好，立即取得路線建議。
+        </p>
+      </div>
+      <a
+        href="/rail-bike-routes/"
+        class="mt-4 inline-flex items-center gap-2 text-sm font-black text-brick-700"
+      >
+        查看完整 A／B／C 比較
+        <Icon name="arrow" size={17} />
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  const recommendations = {
+    south:
+      "<strong>A 路線優先。</strong> 從勝興出發，經魚藤坪鐵橋並前往南斷橋；若想從龍騰站前往隧道群，可再比較 C 路線。",
+    street:
+      "<strong>B 路線優先。</strong> 重點放在龍騰站、2 號隧道、勝興車站與老街，不經魚藤坪鐵橋。",
+    tunnel:
+      "<strong>C 路線優先。</strong> 從龍騰站經魚藤坪鐵橋前往隧道群，適合喜歡山線工程景觀的人。",
+    easy:
+      "<strong>B 路線較好安排。</strong> 可把勝興老街停留直接接進行程；若南斷橋是必看，再改選 A。",
+  };
+
+  document.querySelectorAll<HTMLButtonElement>(".route-choice").forEach((button) => {
+    button.addEventListener("click", () => {
+      document.querySelectorAll(".route-choice").forEach((item) => {
+        item.classList.remove("border-brick-600", "bg-brick-50", "text-brick-700");
+      });
+      button.classList.add("border-brick-600", "bg-brick-50", "text-brick-700");
+      const result = document.querySelector("#route-result p");
+      const key = button.dataset.choice as keyof typeof recommendations;
+      if (result && key) result.innerHTML = recommendations[key];
+    });
+  });
+</script>

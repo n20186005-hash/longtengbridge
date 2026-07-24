@@ -1,0 +1,202 @@
+---
+import { Image } from "astro:assets";
+import { render, type CollectionEntry } from "astro:content";
+import BaseLayout from "./BaseLayout.astro";
+import GoogleMap from "../components/GoogleMap.astro";
+import Icon from "../components/Icon.astro";
+import hero from "../assets/longteng-hero.jpg";
+import bridgeSide from "../assets/longteng-side.jpg";
+import ironBridge from "../assets/iron-bridge.jpg";
+import shengxing from "../assets/shengxing-station.jpg";
+import oldLine from "../assets/old-line.jpg";
+import { SITE } from "../data/site";
+
+interface Props {
+  guide: CollectionEntry<"guides">;
+}
+
+const { guide } = Astro.props;
+const { Content, headings } = await render(guide);
+const images = { hero, bridgeSide, ironBridge, shengxing, oldLine };
+const currentImage = images[guide.data.image];
+const canonicalUrl = `https://longtengbridge.com/${guide.data.slug}/`;
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: guide.data.title,
+  description: guide.data.description,
+  inLanguage: "zh-Hant-TW",
+  mainEntityOfPage: canonicalUrl,
+  image: "https://longtengbridge.com/og-cover.jpg",
+  author: {
+    "@type": "Organization",
+    name: "Longteng Bridge 編輯部",
+  },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "首頁",
+      item: "https://longtengbridge.com/",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: guide.data.title,
+      item: canonicalUrl,
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={guide.data.seoTitle}
+  description={guide.data.description}
+  image="/og-cover.jpg"
+  schema={[articleSchema, breadcrumbSchema]}
+>
+  <article>
+    <header class="section-shell pt-10 sm:pt-16">
+      <nav
+        class="mb-7 flex items-center gap-2 text-xs font-bold text-stone"
+        aria-label="麵包屑"
+      >
+        <a href="/" class="hover:text-brick-700">首頁</a>
+        <Icon name="chevron" size={13} />
+        <span aria-current="page">{guide.data.eyebrow}</span>
+      </nav>
+
+      <div class="grid items-end gap-8 lg:grid-cols-[1fr_0.86fr]">
+        <div class="pb-2">
+          <span class="eyebrow">{guide.data.eyebrow}</span>
+          <h1
+            class="editorial-title mt-5 max-w-4xl text-[clamp(2.55rem,6.3vw,5.25rem)] font-bold leading-[0.98] text-ink"
+          >
+            {guide.data.title}
+          </h1>
+          <p class="mt-6 max-w-3xl text-base leading-8 text-stone sm:text-lg">
+            {guide.data.intro}
+          </p>
+          <div class="mt-6 flex flex-wrap gap-3 text-xs font-bold">
+            <span class="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-stone shadow-sm">
+              <Icon name="clock" size={15} />
+              {guide.data.readTime}
+            </span>
+            <a
+              href="#guide-content"
+              class="inline-flex items-center gap-2 rounded-full bg-brick-100 px-3.5 py-2 text-brick-700"
+            >
+              <Icon name="compass" size={15} />
+              直接看重點
+            </a>
+          </div>
+        </div>
+
+        <figure class="overflow-hidden rounded-[1.75rem] bg-forest-50 shadow-soft">
+          <Image
+            src={currentImage}
+            alt={guide.data.title}
+            widths={[640, 960, 1280]}
+            sizes="(min-width: 1024px) 42vw, 100vw"
+            format="avif"
+            class="aspect-[4/3] h-full w-full object-cover"
+          />
+        </figure>
+      </div>
+
+      <div
+        class="mt-10 grid overflow-hidden rounded-2xl border border-black/8 bg-white/75 sm:grid-cols-2 lg:grid-cols-4"
+      >
+        {
+          guide.data.facts.map((fact) => (
+            <div class="border-b border-black/8 p-5 last:border-0 sm:border-r lg:border-b-0">
+              <p class="text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+                {fact.label}
+              </p>
+              <p class="mt-2 text-sm font-extrabold leading-6 text-ink">{fact.value}</p>
+            </div>
+          ))
+        }
+      </div>
+    </header>
+
+    <div class="section-shell mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
+      <div id="guide-content" class="min-w-0">
+        <div class="grid gap-4 sm:grid-cols-3">
+          {
+            guide.data.highlights.map((item, index) => (
+              <div class="rounded-2xl border border-black/8 bg-white/68 p-5">
+                <span class="flex size-8 items-center justify-center rounded-full bg-brick-100 text-xs font-black text-brick-700">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <h2 class="mt-5 font-extrabold text-ink">{item.title}</h2>
+                <p class="mt-2 text-sm leading-6 text-stone">{item.text}</p>
+              </div>
+            ))
+          }
+        </div>
+
+        <div class="prose-content mt-10">
+          <Content />
+        </div>
+
+        {
+          guide.data.mapQuery && (
+            <section class="mt-14">
+              <span class="eyebrow">Google 地圖</span>
+              <h2 class="editorial-title mb-6 mt-4 text-3xl font-bold text-ink sm:text-4xl">
+                從地圖開始規劃
+              </h2>
+              <GoogleMap query={guide.data.mapQuery} />
+            </section>
+          )
+        }
+      </div>
+
+      <aside class="lg:sticky lg:top-24 lg:self-start">
+        <div class="rounded-2xl border border-black/8 bg-white p-5 shadow-sm">
+          <p class="text-xs font-black tracking-[0.14em] text-stone uppercase">
+            本頁重點
+          </p>
+          <nav class="mt-4 grid gap-1" aria-label="本頁章節">
+            {
+              headings
+                .filter((heading) => heading.depth === 2)
+                .slice(0, 7)
+                .map((heading) => (
+                  <a
+                    href={`#${heading.slug}`}
+                    class="rounded-lg px-3 py-2 text-sm font-semibold leading-6 text-stone transition hover:bg-cream hover:text-brick-700"
+                  >
+                    {heading.text}
+                  </a>
+                ))
+            }
+          </nav>
+        </div>
+
+        <div class="mt-4 rounded-2xl bg-brick-600 p-5 text-white">
+          <Icon name="map" size={22} />
+          <p class="mt-4 font-extrabold">準備出發？</p>
+          <p class="mt-2 text-sm leading-6 text-white/72">
+            先在 Google 地圖確認路線與即時道路狀況。
+          </p>
+          <a
+            href={SITE.mapUrl}
+            target="_blank"
+            rel="noopener"
+            class="mt-4 inline-flex items-center gap-2 text-sm font-black"
+          >
+            開啟導航 <Icon name="arrow" size={16} />
+          </a>
+        </div>
+      </aside>
+    </div>
+  </article>
+</BaseLayout>

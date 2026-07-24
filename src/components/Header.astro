@@ -1,0 +1,82 @@
+---
+import Icon from "./Icon.astro";
+import Logo from "./Logo.astro";
+import { NAV, SITE } from "../data/site";
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  class="sticky top-0 z-50 border-b border-black/5 bg-cream/92 backdrop-blur-xl"
+>
+  <div class="section-shell flex h-[4.75rem] items-center justify-between gap-6">
+    <Logo compact />
+
+    <nav class="hidden items-center gap-1 lg:flex" aria-label="主要導覽">
+      {
+        NAV.map((item) => (
+          <a
+            href={item.href}
+            aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
+            class:list={[
+              "rounded-full px-3.5 py-2 text-[0.82rem] font-bold tracking-wide transition-colors",
+              currentPath.startsWith(item.href)
+                ? "bg-brick-100 text-brick-700"
+                : "text-stone hover:bg-white/80 hover:text-ink",
+            ]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={SITE.mapUrl}
+        target="_blank"
+        rel="noopener"
+        class="hidden items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-forest-600 sm:inline-flex"
+      >
+        <Icon name="map" size={17} />
+        開啟地圖
+      </a>
+
+      <details class="group relative lg:hidden">
+        <summary
+          class="flex size-10 cursor-pointer list-none items-center justify-center rounded-full border border-black/10 bg-white text-ink marker:hidden"
+          aria-label="開啟網站選單"
+        >
+          <span class="group-open:hidden"><Icon name="menu" /></span>
+          <span class="hidden group-open:block"><Icon name="x" /></span>
+        </summary>
+        <div
+          class="absolute right-0 top-12 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-black/8 bg-white p-2 shadow-2xl"
+        >
+          <nav class="grid" aria-label="行動版導覽">
+            {
+              NAV.map((item) => (
+                <a
+                  href={item.href}
+                  class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-bold text-ink hover:bg-cream"
+                >
+                  {item.label}
+                  <Icon name="chevron" size={16} />
+                </a>
+              ))
+            }
+            <a
+              href={SITE.mapUrl}
+              target="_blank"
+              rel="noopener"
+              class="mt-1 flex items-center justify-center gap-2 rounded-xl bg-forest-700 px-4 py-3.5 text-sm font-bold text-white"
+            >
+              <Icon name="map" size={17} />
+              在 Google 地圖開啟
+            </a>
+          </nav>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>

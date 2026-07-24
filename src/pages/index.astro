@@ -1,0 +1,534 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GoogleMap from "../components/GoogleMap.astro";
+import Icon from "../components/Icon.astro";
+import RouteChooser from "../components/RouteChooser.astro";
+import WeatherCard from "../components/WeatherCard.astro";
+import { GUIDE_LINKS } from "../data/site";
+import hero from "../assets/longteng-hero.jpg";
+import bridgeSide from "../assets/longteng-side.jpg";
+import ironBridge from "../assets/iron-bridge.jpg";
+import shengxing from "../assets/shengxing-station.jpg";
+
+const faqs = [
+  {
+    q: "龍騰斷橋和魚藤坪斷橋是同一個地方嗎？",
+    a: "是。魚藤坪斷橋是文化資產名稱，龍騰斷橋是旅客更常使用的名稱；兩者都指 1935 年地震後留下的紅磚橋體遺跡。",
+  },
+  {
+    q: "不搭鐵道自行車也看得到斷橋嗎？",
+    a: "可以。一般旅客可由道路旁的主要景點區參觀北段紅磚殘跡；若想看魚藤坪鐵橋或前往南斷橋，才需要進一步比較鐵道自行車路線。",
+  },
+  {
+    q: "龍騰斷橋需要停留多久？",
+    a: "只看主要北段遺跡可抓約 30～60 分鐘；若要慢慢拍照、閱讀解說或搭配周邊動線，建議保留更寬裕的時間。",
+  },
+  {
+    q: "哪一條鐵道自行車路線適合看南斷橋？",
+    a: "想把南斷橋列為重點，可優先查看 A 路線。路線內容與營運安排可能調整，出發前請再看舊山線鐵道自行車的路線說明。",
+  },
+  {
+    q: "龍騰斷橋和勝興車站怎麼排？",
+    a: "自駕可把龍騰斷橋安排在上午，接著前往勝興老街用餐，再逛勝興車站；若搭鐵道自行車，應先依取票站與報到需求反推順序。",
+  },
+  {
+    q: "下雨天適合前往嗎？",
+    a: "小雨仍可參觀，但山區路面、階梯與橋區步道可能濕滑。遇豪雨、颱風或道路管制，應先查看在地公告與 Google 地圖路況。",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "TouristAttraction",
+    name: "龍騰斷橋（魚藤坪斷橋）",
+    alternateName: ["魚藤坪斷橋", "Longteng Bridge"],
+    description:
+      "位於苗栗縣三義鄉的紅磚鐵道橋遺跡，正式文化資產名稱為魚藤坪斷橋。",
+    url: "https://longtengbridge.com/",
+    image: "https://longtengbridge.com/og-cover.jpg",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "三義鄉",
+      addressRegion: "苗栗縣",
+      addressCountry: "TW",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 24.3585179,
+      longitude: 120.7740367,
+    },
+    touristType: ["親子旅客", "鐵道愛好者", "攝影旅客", "文化旅行者"],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="龍騰斷橋（魚藤坪斷橋）攻略｜交通、停車、鐵道自行車與一日遊"
+  description="整理苗栗龍騰斷橋與魚藤坪斷橋的交通、停車、南北斷橋、舊山線鐵道自行車路線、拍照位置，以及勝興車站和三義一日遊安排。"
+  image="/og-cover.jpg"
+  schema={schema}
+>
+  <section class="section-shell pt-8 sm:pt-12">
+    <div
+      class="relative min-h-[42rem] overflow-hidden rounded-[2rem] bg-forest-700 text-white shadow-soft"
+    >
+      <Image
+        src={hero}
+        alt="苗栗三義龍騰斷橋紅磚拱橋遺跡"
+        widths={[768, 1280, 1920]}
+        sizes="(min-width: 1280px) 1216px, calc(100vw - 2rem)"
+        format="avif"
+        loading="eager"
+        fetchpriority="high"
+        class="absolute inset-0 h-full w-full object-cover"
+      />
+      <div
+        class="absolute inset-0 bg-[linear-gradient(90deg,rgba(20,30,25,.92)_0%,rgba(20,30,25,.7)_44%,rgba(20,30,25,.18)_76%,rgba(20,30,25,.08)_100%)]"
+      >
+      </div>
+      <div
+        class="relative flex min-h-[42rem] max-w-3xl flex-col justify-between p-6 sm:p-10 lg:p-14"
+      >
+        <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-white/72">
+          <span class="rounded-full border border-white/25 bg-black/10 px-3 py-1.5 backdrop-blur">
+            苗栗・三義
+          </span>
+          <span>縣定古蹟</span>
+          <span class="size-1 rounded-full bg-white/45"></span>
+          <span>舊山線旅程起點</span>
+        </div>
+
+        <div class="py-12">
+          <p class="mb-5 text-sm font-black tracking-[0.19em] text-white/62 uppercase">
+            Longteng Bridge Travel Guide
+          </p>
+          <h1
+            class="editorial-title text-[clamp(3.15rem,8vw,6.5rem)] font-bold leading-[0.9] tracking-[-0.055em]"
+          >
+            看懂斷橋，<br />玩遍舊山線
+          </h1>
+          <p class="mt-7 max-w-xl text-base leading-8 text-white/78 sm:text-lg">
+            龍騰斷橋（魚藤坪斷橋）交通、停車、鐵道自行車路線，以及勝興車站與三義一日遊，一次查清楚。
+          </p>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a
+              href="/transportation/"
+              class="inline-flex items-center justify-center gap-2 rounded-full bg-brick-600 px-5 py-3.5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-brick-500"
+            >
+              查看交通與停車
+              <Icon name="arrow" size={18} />
+            </a>
+            <a
+              href="/rail-bike-routes/"
+              class="inline-flex items-center justify-center gap-2 rounded-full border border-white/35 bg-white/8 px-5 py-3.5 text-sm font-black text-white backdrop-blur transition hover:bg-white hover:text-forest-700"
+            >
+              比較鐵道自行車
+              <Icon name="rail" size={18} />
+            </a>
+          </div>
+        </div>
+
+        <div class="grid max-w-xl grid-cols-3 gap-2 text-xs">
+          <div class="rounded-xl bg-black/22 p-3.5 backdrop-blur-sm">
+            <span class="text-white/50">常用名稱</span>
+            <strong class="mt-1 block text-sm">龍騰斷橋</strong>
+          </div>
+          <div class="rounded-xl bg-black/22 p-3.5 backdrop-blur-sm">
+            <span class="text-white/50">正式名稱</span>
+            <strong class="mt-1 block text-sm">魚藤坪斷橋</strong>
+          </div>
+          <div class="rounded-xl bg-black/22 p-3.5 backdrop-blur-sm">
+            <span class="text-white/50">推薦搭配</span>
+            <strong class="mt-1 block text-sm">勝興車站</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell relative z-10 -mt-5 sm:-mt-8" aria-label="快速資訊">
+    <div
+      class="grid overflow-hidden rounded-2xl border border-black/8 bg-white shadow-soft sm:grid-cols-2 lg:grid-cols-4"
+    >
+      {
+        [
+          ["地點", "苗栗縣三義鄉龍騰村", "map"],
+          ["建造年代", "1907 年完工", "calendar"],
+          ["建議停留", "約 30～60 分鐘", "clock"],
+          ["主要看點", "北段紅磚橋拱", "mountain"],
+        ].map(([label, value, icon]) => (
+          <div class="flex items-center gap-4 border-b border-black/8 p-5 last:border-0 sm:border-r lg:border-b-0">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-full bg-brick-50 text-brick-600">
+              <Icon name={icon as any} size={19} />
+            </span>
+            <div>
+              <p class="text-[0.68rem] font-black tracking-[0.14em] text-stone uppercase">
+                {label}
+              </p>
+              <p class="mt-1 text-sm font-extrabold text-ink">{value}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section-shell pt-20 sm:pt-28" aria-label="龍騰斷橋周邊天氣">
+    <WeatherCard />
+  </section>
+
+  <section class="section-shell py-20 sm:py-28">
+    <div class="grid items-end gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+      <div>
+        <span class="eyebrow">先決定怎麼玩</span>
+        <h2 class="editorial-title mt-5 text-4xl font-bold text-ink sm:text-5xl">
+          一座斷橋，<br />三種旅行節奏
+        </h2>
+      </div>
+      <p class="max-w-2xl text-base leading-8 text-stone lg:justify-self-end">
+        龍騰斷橋不只是一個拍照點。你可以快速停留、把它與鐵道自行車排在一起，或以舊山線為主題安排完整三義旅程。
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {
+        [
+          {
+            number: "01",
+            icon: "walk",
+            title: "只看斷橋",
+            time: "約 30～60 分鐘",
+            text: "適合順遊、拍照與第一次認識紅磚橋體，主要參觀道路旁的北段遺跡。",
+            href: "/visit/",
+          },
+          {
+            number: "02",
+            icon: "rail",
+            title: "斷橋＋鐵道自行車",
+            time: "預留半日較從容",
+            text: "從舊山線不同角度看斷橋，依路線選擇魚藤坪鐵橋、南斷橋或勝興老街。",
+            href: "/rail-bike/",
+          },
+          {
+            number: "03",
+            icon: "route",
+            title: "三義一日遊",
+            time: "安排完整一天",
+            text: "串起龍騰斷橋、勝興車站、客家午餐與木雕街區，移動最有效率。",
+            href: "/one-day-trip/",
+          },
+        ].map((item, index) => (
+          <a
+            href={item.href}
+            class:list={[
+              "group rounded-[1.5rem] border p-6 transition duration-300 hover:-translate-y-1 hover:shadow-soft",
+              index === 1
+                ? "border-forest-700 bg-forest-700 text-white"
+                : "border-black/8 bg-white/70 text-ink",
+            ]}
+          >
+            <div class="flex items-center justify-between">
+              <span
+                class:list={[
+                  "flex size-11 items-center justify-center rounded-full",
+                  index === 1 ? "bg-white/12" : "bg-brick-50 text-brick-600",
+                ]}
+              >
+                <Icon name={item.icon as any} size={20} />
+              </span>
+              <span class:list={["text-xs font-black", index === 1 ? "text-white/70" : "text-stone/55"]}>
+                {item.number}
+              </span>
+            </div>
+            <h3 class="editorial-title mt-8 text-2xl font-bold">{item.title}</h3>
+            <p class:list={["mt-2 text-sm font-black", index === 1 ? "text-white/68" : "text-brick-700"]}>
+              {item.time}
+            </p>
+            <p class:list={["mt-4 text-sm leading-7", index === 1 ? "text-white/68" : "text-stone"]}>
+              {item.text}
+            </p>
+            <span class="mt-7 inline-flex items-center gap-2 text-sm font-black">
+              查看攻略
+              <Icon name="arrow" size={17} />
+            </span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section-shell">
+    <RouteChooser />
+  </section>
+
+  <section class="section-shell py-20 sm:py-28">
+    <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <div class="relative">
+        <Image
+          src={bridgeSide}
+          alt="龍騰斷橋紅磚橋拱與山林"
+          widths={[640, 900, 1200]}
+          sizes="(min-width: 1024px) 44vw, 100vw"
+          format="avif"
+          class="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-soft"
+        />
+        <div
+          class="absolute -bottom-5 right-4 max-w-[15rem] rounded-2xl bg-brick-600 p-5 text-white shadow-xl sm:right-8"
+        >
+          <p class="text-xs font-black tracking-[0.12em] text-white/78 uppercase">
+            一句話分辨
+          </p>
+          <p class="mt-2 text-sm font-bold leading-6">
+            紅磚殘跡是斷橋；後方鋼梁橋是震後興建的魚藤坪鐵橋。
+          </p>
+        </div>
+      </div>
+
+      <div class="lg:pl-8">
+        <span class="eyebrow">不再把三座橋搞混</span>
+        <h2 class="editorial-title mt-5 text-4xl font-bold text-ink sm:text-5xl">
+          斷橋、鐵橋、南斷橋，<br />其實各有位置
+        </h2>
+        <p class="mt-6 text-base leading-8 text-stone">
+          多數照片中的紅磚橋拱是龍騰斷橋北段；地震後在西側另建的鋼梁橋，才是魚藤坪鐵橋。南斷橋則是舊橋南側殘跡，參觀方式不同。
+        </p>
+
+        <div class="mt-8 grid gap-3">
+          {
+            [
+              ["龍騰斷橋／魚藤坪斷橋", "1907 年舊橋遺跡，主要景點區可看北段。"],
+              ["魚藤坪鐵橋", "1935 年地震後另建的替代鐵路橋。"],
+              ["南斷橋", "舊橋南段遺跡，適合搭配相應鐵道自行車路線。"],
+            ].map(([title, text], index) => (
+              <a
+                href={index === 1 ? "/yutengping-iron-bridge/" : "/north-south-bridge/"}
+                class="group flex items-start gap-4 rounded-2xl border border-black/8 bg-white/65 p-4 transition hover:bg-white"
+              >
+                <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-forest-100 text-forest-700">
+                  <Icon name="check" size={17} />
+                </span>
+                <span>
+                  <strong class="block text-sm text-ink">{title}</strong>
+                  <span class="mt-1 block text-sm leading-6 text-stone">{text}</span>
+                </span>
+                <span class="ml-auto mt-1 text-brick-600 transition group-hover:translate-x-1">
+                  <Icon name="chevron" size={17} />
+                </span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white/55 py-20 sm:py-28">
+    <div class="section-shell">
+      <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+        <div>
+          <span class="eyebrow">出發前最常查</span>
+          <h2 class="editorial-title mt-5 text-4xl font-bold text-ink sm:text-5xl">
+            六份攻略，<br />把旅程排順
+          </h2>
+          <p class="mt-5 max-w-md text-sm leading-7 text-stone">
+            先處理最影響行程的交通與路線，再往下選拍照、親子或周邊景點。
+          </p>
+        </div>
+
+        <div class="grid gap-3 sm:grid-cols-2">
+          {
+            GUIDE_LINKS.map((item, index) => (
+              <a
+                href={item.href}
+                class="group flex min-h-40 flex-col justify-between rounded-2xl border border-black/8 bg-cream/65 p-5 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+              >
+                <div class="flex items-start justify-between">
+                  <span class="text-[0.68rem] font-black tracking-[0.13em] text-brick-600 uppercase">
+                    {item.kicker}
+                  </span>
+                  <span class="text-xs font-black text-stone/40">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                </div>
+                <div class="mt-8">
+                  <h3 class="text-base font-extrabold text-ink">{item.title}</h3>
+                  <p class="mt-2 text-sm leading-6 text-stone">{item.text}</p>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell py-20 sm:py-28">
+    <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr]">
+      <div>
+        <span class="eyebrow">位置與導航</span>
+        <h2 class="editorial-title mt-5 text-4xl font-bold text-ink sm:text-5xl">
+          先確認目的地，<br />再進山區
+        </h2>
+        <p class="mt-5 text-base leading-8 text-stone">
+          「龍騰斷橋景點區」與「鐵道自行車龍騰站」不是同一個報到概念。若有搭乘安排，請依訂單上的取票站導航；只看斷橋則直接搜尋景點名稱。
+        </p>
+        <div class="mt-7 rounded-2xl border border-brick-100 bg-brick-50 p-5">
+          <p class="text-sm font-extrabold text-brick-700">山區行車提醒</p>
+          <p class="mt-2 text-sm leading-6 text-stone">
+            假日與活動期間可能有交通引導，停車後留意現場標示；遇大雨應同步查看即時路況。
+          </p>
+        </div>
+      </div>
+      <GoogleMap />
+    </div>
+  </section>
+
+  <section class="section-shell pb-20 sm:pb-28">
+    <div class="overflow-hidden rounded-[2rem] bg-[#ece7dc]">
+      <div class="grid lg:grid-cols-2">
+        <div class="p-7 sm:p-10 lg:p-12">
+          <span class="eyebrow">舊山線時間軸</span>
+          <h2 class="editorial-title mt-5 text-4xl font-bold text-ink sm:text-5xl">
+            地震留下的，<br />不只是斷裂
+          </h2>
+          <div class="mt-10 grid gap-0">
+            {
+              [
+                ["1907", "魚藤坪橋完工，紅磚拱橋成為舊山線的重要工程。"],
+                ["1935", "關刀山大地震重創橋體，留下今日所見斷橋。"],
+                ["1936–1938", "西側興建魚藤坪鐵橋，成為替代路線。"],
+                ["1999", "九二一地震再次在遺構上留下痕跡。"],
+                ["2003", "魚藤坪斷橋公告為縣定古蹟。"],
+              ].map(([year, text], index) => (
+                <div class="relative grid grid-cols-[4.5rem_1fr] gap-4 pb-6 last:pb-0">
+                  {index < 4 && <span class="absolute left-[4.94rem] top-7 h-[calc(100%-1rem)] w-px bg-brick-200" />}
+                  <strong class="font-editorial text-lg text-brick-700">{year}</strong>
+                  <div class="relative pl-5">
+                    <span class="absolute left-0 top-2 size-2 rounded-full bg-brick-600 ring-4 ring-brick-100" />
+                    <p class="text-sm leading-6 text-[#565853]">{text}</p>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+          <a
+            href="/history/"
+            class="mt-9 inline-flex items-center gap-2 text-sm font-black text-brick-700"
+          >
+            閱讀完整歷史
+            <Icon name="arrow" size={17} />
+          </a>
+        </div>
+
+        <Image
+          src={ironBridge}
+          alt="魚藤坪斷橋與後方魚藤坪鐵橋"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          format="avif"
+          class="h-full min-h-[28rem] w-full object-cover"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-forest-700 py-20 text-white sm:py-28">
+    <div class="section-shell">
+      <div class="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <span class="text-xs font-black tracking-[0.17em] text-white/72 uppercase">
+            三義一日遊範本
+          </span>
+          <h2 class="editorial-title mt-5 text-4xl font-bold sm:text-5xl">
+            從斷橋出發，<br />一路玩到勝興
+          </h2>
+          <p class="mt-5 max-w-md text-sm leading-7 text-white/65">
+            以下是順序提案，不是固定時刻表。搭乘鐵道自行車時，請以取票與報到需求為主軸調整。
+          </p>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          {
+            [
+              ["上午", "龍騰斷橋", "先看北段紅磚遺跡，避開午後較集中的順遊人潮。"],
+              ["中午", "勝興老街", "安排客家午餐與短暫散步，銜接勝興車站。"],
+              ["下午", "鐵道或木雕", "依預約路線搭車，或前往三義木雕街區。"],
+            ].map(([time, title, text], index) => (
+              <div
+                class:list={[
+                  "rounded-2xl p-5",
+                  index === 1 ? "bg-brick-600" : "border border-white/14 bg-white/5",
+                ]}
+              >
+                <p class="text-xs font-black tracking-[0.13em] text-white/72 uppercase">
+                  {time}
+                </p>
+                <h3 class="editorial-title mt-6 text-2xl font-bold">{title}</h3>
+                <p class="mt-3 text-sm leading-6 text-white/85">{text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+      <a
+        href="/one-day-trip/"
+        class="mt-10 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-black text-forest-700"
+      >
+        查看三套行程
+        <Icon name="arrow" size={17} />
+      </a>
+    </div>
+  </section>
+
+  <section class="section-shell py-20 sm:py-28">
+    <div class="grid gap-10 lg:grid-cols-[0.78fr_1.22fr]">
+      <div>
+        <span class="eyebrow">常見問題</span>
+        <h2 class="editorial-title mt-5 text-4xl font-bold text-ink sm:text-5xl">
+          出發前，<br />再確認一次
+        </h2>
+        <Image
+          src={shengxing}
+          alt="三義勝興車站木造站房"
+          widths={[420, 640, 900]}
+          sizes="(min-width: 1024px) 34vw, 100vw"
+          format="avif"
+          class="mt-9 aspect-[4/3] w-full rounded-2xl object-cover shadow-soft"
+        />
+      </div>
+
+      <div class="divide-y divide-black/8 border-y border-black/8">
+        {
+          faqs.map((item, index) => (
+            <details class="group py-1">
+              <summary class="flex cursor-pointer list-none items-start gap-4 py-5 font-extrabold text-ink marker:hidden">
+                <span class="mt-0.5 text-xs font-black text-brick-600">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span class="flex-1">{item.q}</span>
+                <span class="text-stone transition group-open:rotate-90">
+                  <Icon name="chevron" size={18} />
+                </span>
+              </summary>
+              <p class="pb-6 pl-10 pr-8 text-sm leading-7 text-stone">{item.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

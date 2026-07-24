@@ -1,0 +1,51 @@
+---
+import SimplePage from "../layouts/SimplePage.astro";
+import { IMAGE_CREDITS } from "../data/site";
+---
+
+<SimplePage
+  title="資料與圖片來源"
+  eyebrow="來源說明"
+  description="重要歷史、路線與旅遊判斷均保留來源；網站照片使用可再利用的真實影像並依授權標示作者。"
+>
+  <h2>核心資料來源</h2>
+  <ul>
+    <li>
+      <a href="https://nchdb.boch.gov.tw/assets/overview/monument/20031125000001" target="_blank" rel="noopener">國家文化資產網：魚藤坪斷橋</a>
+      — 文化資產名稱、年代與歷史。
+    </li>
+    <li>
+      <a href="https://miaolitravel.net/article.aspx?sNo=04004516" target="_blank" rel="noopener">苗栗文化觀光旅遊網：龍騰斷橋、南斷橋</a>
+      — 地方景點與旅遊資訊。
+    </li>
+    <li>
+      <a href="https://www.taiwan.net.tw/m1.aspx?id=c100_342&sno=0001110" target="_blank" rel="noopener">交通部觀光署：龍騰斷橋</a>
+      — 景點位置與全國旅遊資訊。
+    </li>
+    <li>
+      <a href="https://www.oml-railbike.com/_pages/info/index.php" target="_blank" rel="noopener">舊山線鐵道自行車：乘車資訊</a>
+      — A、B、C 路線、票價、班次與乘車規則。
+    </li>
+  </ul>
+
+  <h2>真實照片授權</h2>
+  <p>
+    網站不以生成圖片替代景點照片。以下影像來自 Wikimedia Commons，頁面輸出會經 Astro 轉換為適合網頁載入的尺寸與格式：
+  </p>
+  <ul>
+    {
+      IMAGE_CREDITS.map((credit) => (
+        <li>
+          <a href={credit.url} target="_blank" rel="noopener">{credit.name}</a>
+          {" — "}
+          {credit.author}，{credit.license}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Google 地圖</h2>
+  <p>
+    地圖用於導航與理解位置關係。使用者新增地點、評論、相片與營業資訊可能隨時間改變，停車與現場動線仍應依道路標誌及現場指引判斷。
+  </p>
+</SimplePage>

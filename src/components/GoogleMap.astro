@@ -1,0 +1,50 @@
+---
+import Icon from "./Icon.astro";
+import { SITE } from "../data/site";
+
+interface Props {
+  query?: string;
+  title?: string;
+}
+
+const {
+  query = "龍騰斷橋, 苗栗縣三義鄉",
+  title = "龍騰斷橋 Google 地圖",
+} = Astro.props;
+const isBridgeLocation =
+  query.includes("龍騰斷橋") || query.includes("魚藤坪斷橋");
+const src = isBridgeLocation
+  ? "https://www.google.com/maps?q=24.3585179,120.7740367&z=17&output=embed"
+  : `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
+const openUrl = isBridgeLocation
+  ? SITE.mapUrl
+  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+---
+
+<div class="overflow-hidden rounded-[1.75rem] border border-black/8 bg-white shadow-soft">
+  <div class="relative aspect-[16/10] min-h-72 bg-forest-50">
+    <iframe
+      src={src}
+      title={title}
+      class="absolute inset-0 h-full w-full border-0"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      allowfullscreen
+    ></iframe>
+  </div>
+  <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <p class="font-bold text-ink">龍騰斷橋／魚藤坪斷橋</p>
+      <p class="mt-1 text-sm text-stone">苗栗縣三義鄉龍騰村</p>
+    </div>
+    <a
+      href={openUrl || SITE.mapUrl}
+      target="_blank"
+      rel="noopener"
+      class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600"
+    >
+      <Icon name="map" size={17} />
+      在 Google 地圖開啟
+    </a>
+  </div>
+</div>

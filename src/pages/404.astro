@@ -1,0 +1,27 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Icon from "../components/Icon.astro";
+---
+
+<BaseLayout
+  title="找不到頁面"
+  description="這個頁面不存在，請回到龍騰斷橋旅遊指南首頁。"
+  noindex
+>
+  <section class="section-shell py-24 text-center sm:py-32">
+    <p class="text-sm font-black tracking-[0.2em] text-brick-600 uppercase">404</p>
+    <h1 class="editorial-title mt-5 text-5xl font-bold text-ink sm:text-7xl">
+      這段鐵道沒有通往這裡
+    </h1>
+    <p class="mx-auto mt-6 max-w-lg text-base leading-8 text-stone">
+      頁面可能已移動或網址輸入錯誤。回到首頁，重新選擇交通、停車或鐵道自行車攻略。
+    </p>
+    <a
+      href="/"
+      class="mt-9 inline-flex items-center gap-2 rounded-full bg-brick-600 px-5 py-3.5 text-sm font-black text-white"
+    >
+      回到首頁
+      <Icon name="arrow" size={18} />
+    </a>
+  </section>
+</BaseLayout>
