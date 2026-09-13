@@ -2,18 +2,27 @@
 interface Props {
   compact?: boolean;
   light?: boolean;
+  /** 標誌連結目標，英文版指向 /en/ */
+  href?: string;
+  /** 標誌下方的副標，英文版改為英文 */
+  subtitle?: string;
 }
 
-const { compact = false, light = false } = Astro.props;
+const {
+  compact = false,
+  light = false,
+  href = "/",
+  subtitle = "龍騰斷橋指南",
+} = Astro.props;
 ---
 
 <a
-  href="/"
+  href={href}
   class:list={[
     "group inline-flex items-center gap-3 no-underline",
     light ? "text-white" : "text-ink",
   ]}
-  aria-label="Longteng Bridge 龍騰斷橋指南首頁"
+  aria-label={`Longteng Bridge ${subtitle}`}
 >
   <svg
     class="h-10 w-12 shrink-0 text-brick-600 transition-transform duration-300 group-hover:-translate-y-0.5"
@@ -43,7 +52,7 @@ const { compact = false, light = false } = Astro.props;
         light ? "text-white/70" : "text-stone",
       ]}
     >
-      龍騰斷橋指南
+      {subtitle}
     </span>
   </span>
 </a>

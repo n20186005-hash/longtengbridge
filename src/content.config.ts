@@ -25,7 +25,20 @@ const guides = defineCollection({
     ),
     mapQuery: z.string().optional(),
     image: z
-      .enum(["hero", "bridgeSide", "ironBridge", "shengxing", "oldLine"])
+      .enum([
+        "hero",
+        "bridgeSide",
+        "ironBridge",
+        "shengxing",
+        "oldLine",
+        "bridgeBody",
+        "bridgeRear",
+        "bridgeMorning",
+        "stationTunnel",
+        "woodcarving",
+        "historicBridge",
+        "reservoir",
+      ])
       .default("hero"),
   }),
 });

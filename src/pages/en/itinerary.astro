@@ -1,0 +1,594 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+import GoogleMap from "../../components/GoogleMap.astro";
+import shengxing from "../../assets/shengxing-station.jpg";
+import { OFFICIAL_SOURCES } from "../../data/attraction";
+import { SITE } from "../../data/site";
+
+const PAGE_URL = `${SITE.url}/en/itinerary/`;
+
+/** 三套行程；時間只是「一天的形狀」示意，唯一固定點是預約的報到時間。 */
+const plans = [
+  {
+    icon: "rail" as const,
+    name: "The rail bike day",
+    tone: "brick",
+    forYou: "You have children with you, or the rail bike is the reason you came.",
+    note: "Your booked departure becomes the fixed point. Everything else is arranged around it — including which of the three stations you drive to.",
+    stops: [
+      { time: "≈ 09:00", label: "Longteng Bridge", detail: "The arches and the steel bridge, before the car park fills." },
+      { time: "Booked slot", label: "Old Mountain Line rail bike", detail: "Route B or C from Longteng Station, or Route A from the Shengxing Station area." },
+      { time: "≈ 13:00", label: "Shengxing old street", detail: "Lunch and a proper break rather than another viewpoint." },
+      { time: "Afternoon", label: "Shengxing Station", detail: "The timber station building and the platform, a short walk from the old street." },
+      { time: "If time allows", label: "Sanyi woodcarving district", detail: "Hakka food and woodcarving on your way back down, not a separate trip." },
+    ],
+  },
+  {
+    icon: "walk" as const,
+    name: "The no-rail-bike day",
+    tone: "forest",
+    forYou: "You would rather avoid tunnels and elevated track, or you want a lot of unhurried eating and strolling.",
+    note: "This version moves freely because nothing is booked. It suits older visitors and anyone who dislikes fixed departure times.",
+    stops: [
+      { time: "Morning", label: "Longteng Bridge", detail: "The main viewpoint, the broken arches and the steel bridge beyond." },
+      { time: "Late morning", label: "Shengxing Station", detail: "The old mountain line station and its timber building." },
+      { time: "≈ 12:30", label: "Shengxing old street", detail: "Lunch, then browse. The natural rest point of the day." },
+      { time: "Afternoon", label: "Sanyi Wood Sculpture Museum", detail: "An indoor stop that answers why this town is about wood." },
+      { time: "Late afternoon", label: "Shuimei woodcarving street", detail: "Shops and workshops, close to the road back to the freeway." },
+    ],
+  },
+  {
+    icon: "camera" as const,
+    name: "The photography and history day",
+    tone: "stone",
+    forYou: "You are here for the light, the brickwork and the old line rather than for a family outing.",
+    note: "Start with the north section while the light is still soft, then follow the old line theme. How far you go depends on how much driving you accept.",
+    stops: [
+      { time: "Early", label: "Longteng Bridge, north section", detail: "The brick piers and the valley before the light turns flat." },
+      { time: "Mid-morning", label: "Yutengping Iron Bridge viewpoint", detail: "The 1938 replacement line and its relationship to the brick remains." },
+      { time: "Midday", label: "Shengxing Station", detail: "Station building, platform and the tunnel mouth." },
+      { time: "Afternoon", label: "Tai'an Old Station", detail: "An optional extension further along the old mountain line if you have the time." },
+      { time: "If you stay local", label: "Back to Shengxing and the woodcarving district", detail: "Keep the afternoon in Sanyi instead of adding another drive." },
+    ],
+  },
+];
+
+const planTone: Record<string, string> = {
+  brick: "bg-brick-100 text-brick-700",
+  forest: "bg-forest-100 text-forest-700",
+  stone: "bg-cream text-stone",
+};
+
+/** 有預約時的反推順序。 */
+const backwards = [
+  {
+    title: "Fix the rail bike check-in first",
+    text: "Ticket collection and boarding time are the only fixed points in the day. Write them down before you plan anything else, and note which station they belong to.",
+  },
+  {
+    title: "Then reserve time for parking and walking",
+    text: "The stations and the monument are close on the map and slow in reality. Parking, walking between viewpoints and waiting for a space are all part of the day, not overhead.",
+  },
+  {
+    title: "Keep same-area stops on the same side of check-in",
+    text: "Put the monument before or after your departure depending on which station you board from, instead of crossing the valley twice.",
+  },
+  {
+    title: "Do not schedule lunch tightly",
+    text: "Shengxing old street is the natural lunch stop, and it is also where queues build at the weekend. A generous lunch window protects the rest of the afternoon.",
+  },
+  {
+    title: "On a wet day, keep one droppable stop",
+    text: "Decide in advance which stop you will cut if it rains, so the day can be shortened without an argument in a car park.",
+  },
+];
+
+const mistakes = [
+  "Cramming stops from different parts of Miaoli into one day. This valley is small, but the roads are not fast.",
+  "Ignoring which station you collect tickets from, and where you can actually park.",
+  "Treating mountain driving times as fixed values. Traffic, coaches and narrow passing places all add minutes.",
+  "Leaving no queue buffer for lunch on the old street.",
+  "Marking every staircase viewpoint as mandatory when you have older visitors with you.",
+];
+
+const faqs = [
+  {
+    q: "How much time do I need for the bridge itself?",
+    a: "Allow 30 to 60 minutes for the main area. That covers the viewing area, the broken arches and the steel bridge behind them. Additional viewpoints up the old line involve stairs and slopes and will add to that.",
+  },
+  {
+    q: "Can I do Longteng Bridge and Shengxing Station in one day?",
+    a: "Yes — they are the natural pair, and most visitors combine them. Both are on the same old mountain line story, and Shengxing also works as the lunch and rest stop. Adding the rail bike turns it into a full day rather than a half day.",
+  },
+  {
+    q: "Should the rail bike come before or after the bridge?",
+    a: "It depends on which station you board from. If you are booked from Longteng Station, the monument and your departure are in the same stretch of road, so they can be joined. If you are booked from the Shengxing Station area, do the monument and then drive on to Shengxing for the ride and lunch.",
+  },
+  {
+    q: "Is this a full day or a half day?",
+    a: "Without the rail bike it is comfortably a half day, or a relaxed day if you add Sanyi's woodcarving district. With a booked rail bike route, treat it as a full day: the departure time fixes the middle of the day, and parking plus lunch fill the rest.",
+  },
+  {
+    q: "What can I do if it rains?",
+    a: "Shift the balance toward indoor and sheltered stops — the woodcarving museum and the eating side of the old street — and shorten the brick steps and the long walks, which get slippery. Whether the rail bike runs is decided by the operator on the day, so check their notice rather than assuming either way.",
+  },
+  {
+    q: "Can I do this day trip without a car?",
+    a: "Yes, but plan the uphill and return legs first. Trains reach Sanyi Station on the main line; from there the monument and the stations are a few kilometres up a mountain road, reached by taxi, pre-arranged transfer or local bus. Choose one rail bike route at most, and agree the way back down early.",
+  },
+];
+
+const anchors = [
+  { label: "The core combination", href: "#core" },
+  { label: "Three ways to spend the day", href: "#plans" },
+  { label: "Working backwards from a booking", href: "#timing" },
+  { label: "Shengxing and lunch", href: "#shengxing" },
+  { label: "If it rains", href: "#rain" },
+  { label: "Common questions", href: "#faq" },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${PAGE_URL}#faq`,
+  inLanguage: "en",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${PAGE_URL}#webpage`,
+  url: PAGE_URL,
+  name: "One day at Longteng Bridge: day trip plans around Sanyi",
+  inLanguage: "en",
+  about: { "@id": `${SITE.url}/#attraction` },
+  isPartOf: { "@id": `${SITE.url}/#website` },
+  significantLink: [`${SITE.url}/en/`, `${SITE.url}/en/rail-bike/`, `${SITE.url}/one-day-trip/`],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "English guide", item: `${SITE.url}/en/` },
+    { "@type": "ListItem", position: 2, name: "One-day trip plans", item: PAGE_URL },
+  ],
+};
+
+const itemListSchema = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": `${PAGE_URL}#plans`,
+  name: "Day trip plans around Longteng Bridge",
+  inLanguage: "en",
+  itemListElement: plans.map((plan, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: plan.name,
+    description: plan.note,
+  })),
+};
+---
+
+<BaseLayout
+  lang="en"
+  title="One Day at Longteng Bridge｜Sanyi Day Trip Plans with Shengxing Station"
+  description="Three workable day-trip plans around the Remains of Longteng Bridge in Sanyi, Miaoli: with the Old Mountain Line rail bike, without it, and for photography and history — plus how to work backwards from a booking."
+  imageAlt="The timber station building at Shengxing Station on the Old Mountain Line in Sanyi, Miaoli"
+  schema={[pageSchema, itemListSchema, faqSchema, breadcrumbSchema]}
+>
+  <header class="section-shell pt-10 sm:pt-16">
+    <nav class="mb-7 flex items-center gap-2 text-xs font-bold text-stone" aria-label="Breadcrumb">
+      <a href="/en/" class="hover:text-brick-700">English guide</a>
+      <Icon name="chevron" size={13} />
+      <span aria-current="page">One-day trip plans</span>
+    </nav>
+
+    <div class="grid items-end gap-8 lg:grid-cols-[1.08fr_0.92fr]">
+      <div class="pb-2">
+        <span class="eyebrow">Day trips</span>
+        <h1
+          class="editorial-title mt-5 max-w-4xl text-[clamp(2.3rem,5.8vw,4.6rem)] font-bold leading-[1.02] text-ink"
+        >
+          One day around
+          <br />
+          Longteng Bridge
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-8 text-stone sm:text-lg">
+          The combination that works is small: the bridge, Shengxing Station and one taste of Sanyi.
+          What actually decides the shape of the day is whether you have booked the Old Mountain Line
+          rail bike — that single choice sets the rhythm everything else fits around.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3 text-xs font-bold">
+          <span class="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-stone shadow-sm">
+            <Icon name="clock" size={15} />
+            7 minute read
+          </span>
+          <a
+            href="#plans"
+            class="inline-flex items-center gap-2 rounded-full bg-brick-100 px-3.5 py-2 text-brick-700"
+          >
+            <Icon name="compass" size={15} />
+            See the three plans
+          </a>
+          <a
+            href={SITE.bookingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3.5 py-2 text-white"
+          >
+            <Icon name="rail" size={15} />
+            Operator booking information
+          </a>
+        </div>
+      </div>
+
+      <figure class="overflow-hidden rounded-[1.75rem] bg-forest-50 shadow-soft">
+        <Image
+          src={shengxing}
+          alt="The timber station building at Shengxing Station on the Old Mountain Line in Sanyi, Miaoli"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1024px) 42vw, 100vw"
+          format="avif"
+          class="aspect-[4/3] h-full w-full object-cover"
+        />
+      </figure>
+    </div>
+
+    <div class="mt-10 grid overflow-hidden rounded-2xl border border-black/8 bg-white/75 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          { label: "Core", value: "Bridge + Shengxing" },
+          { label: "Decides the day", value: "Rail bike, or not" },
+          { label: "Culture add-on", value: "Sanyi woodcarving" },
+          { label: "Planning rule", value: "Fix the booking first" },
+        ].map((fact) => (
+          <div class="border-b border-black/8 p-5 last:border-0 sm:border-r lg:border-b-0">
+            <p class="text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+              {fact.label}
+            </p>
+            <p class="mt-2 text-sm font-extrabold leading-6 text-ink">{fact.value}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <ul class="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        anchors.map((anchor) => (
+          <li>
+            <a
+              href={anchor.href}
+              class="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-white/70 px-4 py-3 text-sm font-bold text-ink transition hover:border-brick-200 hover:bg-white"
+            >
+              {anchor.label}
+              <Icon name="arrow" size={16} class="text-brick-600" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </header>
+
+  <section id="core" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">The short version</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Three stops, one story
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      Everything here belongs to the same abandoned railway. The bridge is the earthquake monument,
+      Shengxing is the station that served the same line, and the rail bike is what reopened part of
+      the trackbed. Staying on that theme is what makes a short day feel complete rather than
+      scattered.
+    </p>
+
+    <div class="mt-9 grid gap-3 lg:grid-cols-3">
+      {
+        [
+          {
+            icon: "mountain" as const,
+            title: "The monument",
+            text: "Red-brick piers and broken arches on County Road 49, free to visit, 30 to 60 minutes at the main viewpoint.",
+            href: "/en/",
+            link: "Visitor guide",
+          },
+          {
+            icon: "train" as const,
+            title: "Shengxing Station",
+            text: "The old mountain line station at about 402 m, with an old street that works as the lunch stop of the day.",
+            href: "/en/transportation/",
+            link: "Getting there",
+          },
+          {
+            icon: "rail" as const,
+            title: "The rail bike",
+            text: "A booked departure on the reopened trackbed — tunnels, the Yutengping Iron Bridge and the south section remains.",
+            href: "/en/rail-bike/",
+            link: "Rail bike routes",
+          },
+        ].map((item) => (
+          <div class="flex h-full flex-col rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-9 items-center justify-center rounded-full bg-forest-100 text-forest-700">
+              <Icon name={item.icon} size={18} />
+            </span>
+            <h3 class="mt-4 font-extrabold text-ink">{item.title}</h3>
+            <p class="mt-2 text-sm leading-7 text-stone">{item.text}</p>
+            <a
+              href={item.href}
+              class="mt-4 inline-flex items-center gap-2 text-sm font-black text-brick-700"
+            >
+              {item.link}
+              <Icon name="arrow" size={16} />
+            </a>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="mt-10">
+      <GoogleMap
+        lang="en"
+        title="Longteng Bridge and Shengxing Station on Google Maps"
+        query="龍騰斷橋 勝興車站"
+      />
+    </div>
+  </section>
+
+  <section id="plans" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Three plans</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Three ways to spend the day
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      Pick the one that matches your group rather than the one with the most stops. Times below show
+      the shape of the day, not a published schedule — the only fixed point is your booked rail bike
+      departure.
+    </p>
+
+    <div class="mt-9 grid gap-4 lg:grid-cols-3">
+      {
+        plans.map((plan) => (
+          <article class="flex h-full flex-col rounded-[1.75rem] border border-black/8 bg-white/72 p-6">
+            <span
+              class:list={[
+                "flex size-9 items-center justify-center rounded-full",
+                planTone[plan.tone] ?? planTone.stone,
+              ]}
+            >
+              <Icon name={plan.icon} size={18} />
+            </span>
+            <h3 class="mt-4 text-lg font-extrabold text-ink">{plan.name}</h3>
+            <p class="mt-2 text-sm leading-7 text-stone">{plan.forYou}</p>
+
+            <ol class="mt-5 grid gap-3 border-t border-black/8 pt-5">
+              {plan.stops.map((stop) => (
+                <li class="flex gap-3">
+                  <span class="mt-1.5 size-1.5 shrink-0 rounded-full bg-brick-300" />
+                  <span>
+                    <span class="block text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">
+                      {stop.time}
+                    </span>
+                    <strong class="mt-0.5 block text-sm font-extrabold text-ink">{stop.label}</strong>
+                    <span class="mt-1 block text-xs leading-6 text-stone">{stop.detail}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <p class="mt-auto pt-5 text-xs leading-6 text-stone">{plan.note}</p>
+          </article>
+        ))
+      }
+    </div>
+
+    <div class="mt-8 flex flex-col gap-3 rounded-2xl border border-black/8 bg-white/72 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm leading-7 text-stone">
+        If you are riding, decide the route and the boarding station before you plan anything else —
+        it moves the whole day.
+      </p>
+      <a
+        href="/en/rail-bike/"
+        class="inline-flex shrink-0 items-center gap-2 text-sm font-black text-brick-700"
+      >
+        Compare Routes A, B and C
+        <Icon name="arrow" size={16} />
+      </a>
+    </div>
+  </section>
+
+  <section id="timing" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Sequencing</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Working backwards from a booking
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      If you have a rail bike reservation, stop planning forwards. Start from the departure time and
+      build the rest of the day around it, in this order.
+    </p>
+
+    <ol class="mt-9 grid gap-3 lg:grid-cols-2">
+      {
+        backwards.map((step, index) => (
+          <li class="flex gap-4 rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brick-100 text-xs font-black text-brick-700">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>
+              <strong class="block font-extrabold text-ink">{step.title}</strong>
+              <span class="mt-2 block text-sm leading-7 text-stone">{step.text}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mt-8 rounded-2xl border border-brick-200 bg-brick-50 p-5">
+      <p class="text-sm font-extrabold text-brick-700">The trap</p>
+      <p class="mt-2 text-sm leading-7 text-brick-700/90">
+        Booking a departure before deciding what you want to see is how people end up on the wrong
+        route, at the wrong station, on a road they did not plan to drive. Choose the scenery first,
+        then the time.
+      </p>
+    </div>
+  </section>
+
+  <section id="shengxing" class="section-shell mt-16 scroll-mt-24">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div>
+        <span class="eyebrow">Stopping time</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          How long to allow at Shengxing
+        </h2>
+        <p class="mt-5 text-sm leading-8 text-stone">
+          Shengxing is usually treated as a quick photo stop and then rushed. It works better as the
+          lunch and rest point of the day, and how long you need depends entirely on which of those
+          two things you are doing.
+        </p>
+        <ul class="mt-6 grid gap-3 text-sm leading-7 text-stone">
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">Station building and platform only</strong>
+            A short stop. Look at the timber building, walk the platform, and you have seen the
+            essentials.
+          </li>
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">The old street as well</strong>
+            Add a meal, browsing and a rest, and the stop naturally becomes the middle of the day.
+            Weekend queues are normal, so leave margin.
+          </li>
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">Waiting for a rail bike departure</strong>
+            If you are boarding from the Shengxing Station area, allow time to collect tickets and
+            find parking before your slot, and let the old street fill whatever is left.
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <span class="eyebrow">Weather</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          If it rains
+        </h2>
+        <p class="mt-5 text-sm leading-8 text-stone">
+          Rain does not close the monument, but it does change which half of this itinerary is worth
+          doing. Rather than cancelling the day, rebalance it.
+        </p>
+        <ul class="mt-6 grid gap-2.5 text-sm leading-7 text-stone">
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Keep the indoor and sheltered stops — the woodcarving museum, the eating side of the old street — and shorten the rest.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Cut the brick steps and the long footpath sections first. Wet brick and stone here are genuinely slippery.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Fog reduces visibility on the mountain road faster than rain does. That affects driving, not just walking.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Whether the rail bike runs is the operator's decision on the day. Check their notice instead of assuming either way.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Take the forecast for the day itself, and treat a heavy-rain, strong-wind or typhoon warning as the signal to drop the furthest stop.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell mt-16">
+    <span class="eyebrow">Avoid these</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Common mistakes
+    </h2>
+
+    <ul class="mt-9 grid max-w-3xl gap-2.5 text-sm leading-7 text-stone">
+      {
+        mistakes.map((item) => (
+          <li class="flex gap-3 rounded-2xl border border-black/8 bg-white/72 px-5 py-4">
+            <Icon name="x" size={15} class="mt-1.5 shrink-0 text-brick-600" />
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="faq" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">FAQ</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Common questions
+    </h2>
+
+    <div class="mt-9 grid max-w-3xl gap-3">
+      {
+        faqs.map((item) => (
+          <details class="group rounded-2xl border border-black/8 bg-white/72 px-5 py-4">
+            <summary class="cursor-pointer list-none font-extrabold text-ink marker:content-none">
+              <span class="flex items-start justify-between gap-4">
+                {item.q}
+                <Icon
+                  name="chevron"
+                  size={17}
+                  class="mt-1 shrink-0 text-brick-600 transition group-open:rotate-90"
+                />
+              </span>
+            </summary>
+            <p class="mt-3 text-sm leading-8 text-stone">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+
+    <div class="mt-10 rounded-[1.75rem] border border-black/8 bg-white/72 p-6 sm:p-8">
+      <span class="eyebrow">Official sources</span>
+      <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+        Rail bike timetables, fares, bus services and road conditions change. Confirm them with the
+        bodies below before you travel — that is why this page describes how to sequence a day instead
+        of printing numbers that go stale.
+      </p>
+      <ul class="mt-6 grid gap-2.5 sm:grid-cols-2">
+        {
+          OFFICIAL_SOURCES.map((source) => (
+            <li>
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-start gap-3 rounded-xl border border-black/8 bg-white px-4 py-3 text-sm font-bold text-ink transition hover:border-brick-200"
+              >
+                <Icon name="check" size={16} class="mt-0.5 shrink-0 text-forest-600" />
+                <span>{source.nameEn}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/en/transportation/"
+          class="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:border-brick-300"
+        >
+          <Icon name="train" size={16} />
+          Getting there
+        </a>
+        <a
+          href="/en/rail-bike/"
+          class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600"
+        >
+          <Icon name="route" size={16} />
+          Choose a rail bike route
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

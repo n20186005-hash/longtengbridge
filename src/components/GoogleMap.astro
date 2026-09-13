@@ -1,24 +1,30 @@
 ---
 import Icon from "./Icon.astro";
 import { SITE } from "../data/site";
+import { ATTRACTION, AUTHORITY_LINKS } from "../data/attraction";
 
 interface Props {
   query?: string;
   title?: string;
+  /** 介面語系；英文版頁面傳 "en" 以輸出英文說明文字 */
+  lang?: string;
 }
 
 const {
   query = "龍騰斷橋, 苗栗縣三義鄉",
-  title = "龍騰斷橋 Google 地圖",
+  title = `${ATTRACTION.shortNameZh} Google 地圖`,
+  lang = "zh-Hant-TW",
 } = Astro.props;
+const isEnglish = lang.toLowerCase().startsWith("en");
 const isBridgeLocation =
   query.includes("龍騰斷橋") || query.includes("魚藤坪斷橋");
 const src = isBridgeLocation
-  ? "https://www.google.com/maps?q=24.3585179,120.7740367&z=17&output=embed"
+  ? ATTRACTION.mapsEmbedSrc
   : `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
 const openUrl = isBridgeLocation
   ? SITE.mapUrl
   : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+const primaryAuthority = AUTHORITY_LINKS[0];
 ---
 
 <div class="overflow-hidden rounded-[1.75rem] border border-black/8 bg-white shadow-soft">
@@ -28,23 +34,75 @@ const openUrl = isBridgeLocation
       title={title}
       class="absolute inset-0 h-full w-full border-0"
       loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
+      referrerpolicy="strict-origin-when-cross-origin"
       allowfullscreen
     ></iframe>
   </div>
   <div class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
     <div>
-      <p class="font-bold text-ink">龍騰斷橋／魚藤坪斷橋</p>
-      <p class="mt-1 text-sm text-stone">苗栗縣三義鄉龍騰村</p>
+      {
+        isEnglish ? (
+          <p class="font-bold text-ink">
+            {ATTRACTION.fullName}
+            <span class="font-semibold text-stone">
+              （{ATTRACTION.shortNameZh}／{ATTRACTION.officialName}）
+            </span>
+          </p>
+        ) : (
+          <p class="font-bold text-ink">
+            {ATTRACTION.shortNameZh}／{ATTRACTION.officialName}
+          </p>
+        )
+      }
+      <p class="mt-1 text-sm text-stone">
+        {isEnglish
+          ? `${ATTRACTION.streetAddressEn}, ${ATTRACTION.postalCode} ${ATTRACTION.city}, ${ATTRACTION.state}, ${ATTRACTION.country}`
+          : `${ATTRACTION.postalCode} ${ATTRACTION.cityZh}${ATTRACTION.streetAddress}`}
+      </p>
+      <p class="mt-1 text-xs text-stone">
+        Plus Code{isEnglish ? ": " : "："}{ATTRACTION.plusCode}
+      </p>
     </div>
     <a
       href={openUrl || SITE.mapUrl}
       target="_blank"
-      rel="noopener"
+      rel="noopener noreferrer"
       class="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600"
     >
       <Icon name="map" size={17} />
-      在 Google 地圖開啟
+      {isEnglish ? "Open in Google Maps" : "在 Google 地圖開啟"}
     </a>
+  </div>
+  <div class="border-t border-black/8 px-5 py-4 text-xs leading-6 text-stone">
+    {
+      isEnglish ? (
+        <p>
+          For official tourism information see{" "}
+          <a
+            href={primaryAuthority.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-black text-brick-700 underline decoration-brick-100 underline-offset-4"
+          >
+            {primaryAuthority.labelEn}
+          </a>
+          . Map pins, reviews and business information change over time; follow road signs and
+          on-site guidance for parking and walking routes.
+        </p>
+      ) : (
+        <p>
+          官方觀光資訊請參考
+          <a
+            href={primaryAuthority.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-black text-brick-700 underline decoration-brick-100 underline-offset-4"
+          >
+            {primaryAuthority.label}
+          </a>
+          。地圖上的地點、評論與營業資訊可能隨時間變動，停車與現場動線仍應依道路標誌及現場指引判斷。
+        </p>
+      )
+    }
   </div>
 </div>

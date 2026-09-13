@@ -1,69 +1,208 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import EnHeader from "../components/EnHeader.astro";
+import EnFooter from "../components/EnFooter.astro";
 import "../styles/global.css";
 import { SITE } from "../data/site";
+import { ATTRACTION } from "../data/attraction";
+import {
+  DEFAULT_LANG,
+  EN_SITE,
+  alternatesFor,
+  type Alternate,
+} from "../data/i18n";
 
 interface Props {
   title: string;
   description: string;
   image?: string;
+  imageAlt?: string;
   noindex?: boolean;
   schema?: Record<string, unknown> | Array<Record<string, unknown>>;
+  /** 頁面語系（BCP-47）。預設繁體中文，英文頁傳 "en"。 */
+  lang?: string;
+  /** 覆寫 hreflang 清單；未提供時依語系自動推導。 */
+  alternates?: Alternate[];
 }
 
 const {
   title,
   description,
   image = "/og-cover.jpg",
+  imageAlt = `${ATTRACTION.shortNameZh}（${ATTRACTION.officialName}）${ATTRACTION.cityZh}${ATTRACTION.stateZh}景觀`,
   noindex = false,
   schema,
+  lang = DEFAULT_LANG,
+  alternates,
 } = Astro.props;
-const canonical = new URL(Astro.url.pathname, SITE.url);
+
+const isEnglish = lang.toLowerCase().startsWith("en");
+const pathname = Astro.url.pathname;
+const canonical = new URL(pathname, SITE.url);
 const imageUrl = new URL(image, SITE.url);
 const fullTitle = title.includes("Longteng Bridge")
   ? title
   : `${title}｜Longteng Bridge`;
 
+/** hreflang：中英對照由 i18n.ts 統一推導，確保雙向對稱 */
+const alternateLinks =
+  alternates ?? alternatesFor(lang, pathname);
+const ogLocale = isEnglish ? "en_US" : "zh_TW";
+const alternateLocales = isEnglish ? ["zh_TW"] : ["en_US"];
+const siteDescription = isEnglish ? EN_SITE.description : SITE.description;
+const siteName = isEnglish
+  ? "Longteng Bridge｜English Guide"
+  : "Longteng Bridge｜龍騰斷橋旅遊指南";
+
+/** 唯一實體錨點：讓 Google 在知識圖譜中精確定位本站對應的景點節點 */
+const attractionId = `${SITE.url}/#attraction`;
+
 const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: "Longteng Bridge｜龍騰斷橋旅遊指南",
+  "@id": `${SITE.url}/#website`,
+  name: siteName,
   url: SITE.url,
-  inLanguage: "zh-Hant-TW",
-  description: SITE.description,
+  inLanguage: lang,
+  description: siteDescription,
+  publisher: { "@id": `${SITE.url}/#organization` },
 };
 
-const jsonLd = schema
-  ? Array.isArray(schema)
-    ? [websiteSchema, ...schema]
-    : [websiteSchema, schema]
-  : [websiteSchema];
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": `${SITE.url}/#organization`,
+  name: siteName,
+  url: SITE.url,
+  logo: {
+    "@type": "ImageObject",
+    url: `${SITE.url}/icon-512.png`,
+    width: 512,
+    height: 512,
+  },
+  description: isEnglish
+    ? EN_SITE.organizationDescription
+    : "獨立旅遊資訊網站，整理龍騰斷橋（魚藤坪斷橋）、舊山線鐵道自行車與三義一日遊的出行決策資訊。",
+  disambiguatingDescription: isEnglish
+    ? "This site is an independent travel guide. It is not the official website of the Remains of Longteng Bridge, the Miaoli County Government or the Old Mountain Line Rail Bike."
+    : "本站為獨立旅遊指南，並非龍騰斷橋、苗栗縣政府或舊山線鐵道自行車的官方網站。",
+};
+
+/** 單景點實體綁定：座標、地址、圖片與權威外鏈 */
+const attractionSchema = {
+  "@context": "https://schema.org",
+  "@type": "TouristAttraction",
+  "@id": attractionId,
+  name: ATTRACTION.fullName,
+  alternateName: [
+    ATTRACTION.shortName,
+    ATTRACTION.shortNameZh,
+    ATTRACTION.officialName,
+    `${ATTRACTION.city} ${ATTRACTION.fullName}`,
+  ],
+  description: `Comprehensive visitor guide to ${ATTRACTION.fullName}（${ATTRACTION.shortNameZh}／${ATTRACTION.officialName}）in ${ATTRACTION.city}, ${ATTRACTION.state}, ${ATTRACTION.country}.`,
+  disambiguatingDescription: isEnglish
+    ? `${ATTRACTION.shortNameZh} and ${ATTRACTION.officialName} are the same red-brick railway bridge remains. The steel girder bridge standing behind them is the Yutengping Iron Bridge, completed in 1938, and is a different structure.`
+    : `${ATTRACTION.shortNameZh}與${ATTRACTION.officialName}是同一處紅磚鐵道橋遺跡；後方鋼梁橋為 1938 年完工的魚藤坪鐵橋，並非同一座橋。`,
+  url: SITE.url,
+  mainEntityOfPage: SITE.url,
+  image: [
+    `${SITE.url}/og-cover.jpg`,
+    `${SITE.url}/icon-512.png`,
+  ],
+  isAccessibleForFree: true,
+  publicAccess: true,
+  category: ATTRACTION.googleCategory,
+  additionalType: "https://schema.org/HistoricSite",
+  touristType: isEnglish
+    ? ["Families", "Railway enthusiasts", "Photographers", "Cultural travellers", "Independent travellers"]
+    : ["親子旅客", "鐵道愛好者", "攝影旅客", "文化旅行者", "海外自由行旅客"],
+  telephone: ATTRACTION.telephone,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: ATTRACTION.streetAddress,
+    addressLocality: ATTRACTION.cityZh,
+    addressRegion: ATTRACTION.stateZh,
+    postalCode: ATTRACTION.postalCode,
+    addressCountry: ATTRACTION.countryCode,
+  },
+  geo: {
+    "@type": "GeoCoordinates",
+    latitude: ATTRACTION.latitude,
+    longitude: ATTRACTION.longitude,
+  },
+  hasMap: ATTRACTION.mapsShareUrl,
+  sameAs: [
+    ATTRACTION.mapsShareUrl,
+    "https://nchdb.boch.gov.tw/assets/overview/monument/20031125000001",
+    "https://www.taiwan.net.tw/m1.aspx?id=c100_342&sno=0001110",
+  ],
+};
+
+const jsonLd = [
+  websiteSchema,
+  organizationSchema,
+  attractionSchema,
+  ...(schema ? (Array.isArray(schema) ? schema : [schema]) : []),
+];
 ---
 
 <!doctype html>
-<html lang="zh-Hant-TW">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#315847" />
     <meta name="description" content={description} />
+    {
+      !isEnglish && (
+        <meta
+          name="keywords"
+          content="龍騰斷橋,魚藤坪斷橋,Longteng Bridge,舊山線鐵道自行車,勝興車站,三義一日遊,苗栗景點"
+        />
+      )
+    }
     <meta name="robots" content={noindex ? "noindex,nofollow" : "index,follow,max-image-preview:large"} />
     <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="zh-Hant-TW" href={canonical} />
-    <link rel="alternate" hreflang="x-default" href={canonical} />
+    {
+      alternateLinks.map((alternate) => (
+        <link
+          rel="alternate"
+          hreflang={alternate.hreflang}
+          href={new URL(alternate.path, SITE.url)}
+        />
+      ))
+    }
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="application-name" content={isEnglish ? "Longteng Bridge Guide" : "龍騰斷橋指南"} />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content={isEnglish ? "Longteng Bridge Guide" : "龍騰斷橋指南"} />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="zh_TW" />
+    <meta property="og:locale" content={ogLocale} />
+    {
+      alternateLocales.map((locale) => (
+        <meta property="og:locale:alternate" content={locale} />
+      ))
+    }
     <meta property="og:site_name" content="Longteng Bridge" />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <title>{fullTitle}</title>
     <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
 
@@ -82,12 +221,20 @@ const jsonLd = schema
       href="#main-content"
       class="fixed left-4 top-3 z-[100] -translate-y-20 rounded-lg bg-white px-4 py-2 text-sm font-bold text-ink shadow-lg transition focus:translate-y-0"
     >
-      跳至主要內容
+      {isEnglish ? "Skip to main content" : "跳至主要內容"}
     </a>
-    <Header />
+    {isEnglish ? <EnHeader /> : <Header />}
     <main id="main-content">
       <slot />
     </main>
-    <Footer />
+    {isEnglish ? <EnFooter /> : <Footer />}
+
+    <script is:inline>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker.register("/sw.js").catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,425 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Icon from "../components/Icon.astro";
+import WeatherPanel from "../components/WeatherPanel.astro";
+import WeatherFallback from "../components/WeatherFallback.astro";
+import SourcesSection from "../components/SourcesSection.astro";
+import { ATTRACTION } from "../data/attraction";
+
+/** 山區天氣特性：說明「為什麼預報和現場不一樣」 */
+const mountainTraits = [
+  {
+    icon: "mountain" as const,
+    title: "氣溫比平地低",
+    text: "斷橋位在三義淺山山谷，氣溫通常比苗栗市區、台中市區低約 1～3 度，清晨與夜間差距更明顯。",
+  },
+  {
+    icon: "umbrella" as const,
+    title: "午後容易有對流雨",
+    text: "夏季午後常見短時強降雨。平地還沒下、山谷已經在飄雨是常態，雨勢集中但通常不會持續一整天。",
+  },
+  {
+    icon: "leaf" as const,
+    title: "清晨與雨後起霧",
+    text: "冬春季與降雨過後，山谷容易起霧並降低能見度，影響拍照也影響行車，上午 10 點前後最常見。",
+  },
+  {
+    icon: "droplet" as const,
+    title: "溪水反應比雨更快",
+    text: "魚藤坪溪位在水庫上游集水區。上游降雨後數十分鐘內就可能暴漲並轉濁，你所在的位置不一定正在下雨。",
+  },
+  {
+    icon: "shirt" as const,
+    title: "冬季體感比溫度低",
+    text: "東北季風期間山谷與稜線風勢明顯，體感溫度低於溫度數字，防風比加厚更有效。",
+  },
+];
+
+/** 判讀步驟：把預報轉成行程順序 */
+const steps = [
+  {
+    title: "先看降雨機率落在哪個級距",
+    text: "機率到 60% 以上，就當作「今天會遇到雨」來安排，而不是賭它不下。機率不是保證，但足以決定要不要帶雨具。",
+  },
+  {
+    title: "再看逐時降雨，排出戶外時段",
+    text: "把斷橋、步道與鐵道自行車這些戶外段，放在雨勢最少的那幾個小時；雨集中在午後，就把戶外行程往前移。",
+  },
+  {
+    title: "確認風勢與能見度",
+    text: "風大時撐傘幾乎沒有用，也會讓稜線路段更不舒服；起霧會讓拍照與山路行車風險同時上升。",
+  },
+  {
+    title: "最後準備一個備案",
+    text: "勝興老街、室內場館、三義市區用餐，都是雨勢轉強時能立刻切換的選項，不必等到現場才想。",
+  },
+];
+
+/** 雨勢判斷表：不同雨況的現場狀況與建議 */
+const rainGuides = [
+  {
+    level: "毛毛雨、短暫小雨",
+    tone: "good" as const,
+    conditions: "磚階、橋區步道與泥土路面會濕滑，光線偏灰，照片對比降低。",
+    advice: "可以照原計畫參觀。穿防滑鞋、帶折傘，上下階梯與斜坡放慢腳步。",
+  },
+  {
+    level: "午後雷陣雨",
+    tone: "watch" as const,
+    conditions: "雨勢來得快、雨滴大，常伴隨雷擊；溪水可能在短時間內變濁、變急。",
+    advice: "戶外行程排在上午。午後改走老街、室內或市區；不要停留在溪床、橋下或空曠處。",
+  },
+  {
+    level: "連續降雨、豪雨",
+    tone: "danger" as const,
+    conditions: "山區道路可能落石、坍方或積水，步道泥濘，溪水暴漲速度快。",
+    advice: "建議改期。山區步道與鐵道自行車在這種條件下多會暫停或調整，出發前先確認公告。",
+  },
+  {
+    level: "颱風、豪雨特報",
+    tone: "danger" as const,
+    conditions: "官方已發布警特報，山區道路與景點可能預警性封閉。",
+    advice: "以中央氣象署與縣政府公告為準，行程應取消或延期，不要以「看現場狀況」為理由前往。",
+  },
+];
+
+const toneClass: Record<string, string> = {
+  good: "border-forest-100 bg-forest-50 text-forest-700",
+  watch: "border-brick-200 bg-brick-50 text-brick-700",
+  danger: "border-brick-300 bg-brick-100 text-brick-700",
+};
+
+/** 四季裝備關鍵字（詳細判斷請看四季攻略） */
+const seasonKeywords = [
+  { season: "春（3–5 月）", text: "起霧、午後陣雨、溫差大；薄外套與折傘都要帶。" },
+  { season: "夏（6–8 月）", text: "高溫、午後雷雨、蚊蟲活躍；防曬、飲水與防蚊優先。" },
+  { season: "秋（9–11 月）", text: "天氣相對穩定、能見度好；早晚轉涼，帶一件防風外套。" },
+  { season: "冬（12–2 月）", text: "東北季風、濕冷與霧；防風外套與防水鞋最實用。" },
+];
+
+const faqs = [
+  {
+    q: "龍騰斷橋今天天氣如何？",
+    a: "本頁最上方的即時天氣與 7 日預報，就是龍騰斷橋所在的三義山區數值，會標示資料時間並每 15 分鐘更新一次。颱風、豪雨等官方警特報請以中央氣象署公告為準。",
+  },
+  {
+    q: "下雨天還可以去龍騰斷橋嗎？",
+    a: "毛毛雨與短暫小雨仍可參觀，但磚階與步道會濕滑，需放慢腳步。若是午後雷陣雨，建議把戶外行程移到上午；遇到豪雨、連續降雨或颱風警特報，山區道路有落石與坍方風險，建議改期。",
+  },
+  {
+    q: "為什麼預報顯示晴天，到現場卻在下雨或起霧？",
+    a: "預報多以較大的網格與平地測站推估，山谷地形會造成局部差異。夏季午後的對流雨與清晨、雨後的霧，經常只影響山谷一帶，因此現場狀況可能與平地不同。",
+  },
+  {
+    q: "冬天去龍騰斷橋會很冷嗎？怎麼穿？",
+    a: "山區氣溫通常比平地低約 1～3 度，東北季風期間體感更低。建議採防風外層加中層保暖的穿法，並選防滑、防潑水的鞋款，比單純穿厚更有效。",
+  },
+  {
+    q: "夏天午後雷陣雨會影響參觀嗎？",
+    a: "會，尤其是雷擊與溪水暴漲。建議上午先走斷橋與步道，午後安排老街、室內或市區行程；雷雨期間不要停留在溪床、橋下與空曠處。",
+  },
+  {
+    q: "搭舊山線鐵道自行車遇到下雨會停駛嗎？",
+    a: "是否停駛或調整，由營運單位依當時天候與路線安全狀況判斷，本站不寫死標準。出發前請查看營運單位公告並確認聯絡方式，遇到雷雨、強風或豪雨特報時最可能調整。",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://longtengbridge.com/weather/#faq",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://longtengbridge.com/weather/#webpage",
+  url: "https://longtengbridge.com/weather/",
+  name: "龍騰斷橋天氣與雨天行程判斷",
+  inLanguage: "zh-Hant-TW",
+  about: { "@id": "https://longtengbridge.com/#attraction" },
+  isPartOf: { "@id": "https://longtengbridge.com/#website" },
+  significantLink: [
+    "https://longtengbridge.com/seasonal-guide/",
+    "https://longtengbridge.com/rail-bike/",
+    "https://longtengbridge.com/transportation/",
+  ],
+};
+
+const anchors = [
+  { label: "即時預報與出行建議", href: "#now" },
+  { label: "山區天氣特性", href: "#mountain" },
+  { label: "雨天還能不能去", href: "#rain" },
+  { label: "鐵道自行車遇雨", href: "#railbike" },
+  { label: "常見問題", href: "#faq" },
+];
+---
+
+<BaseLayout
+  title="龍騰斷橋天氣｜苗栗三義即時預報與舊山線雨天搭乘判斷"
+  description="查苗栗三義龍騰斷橋即時天氣、降雨機率與 7 日預報，並整理山區起霧、午後雷陣雨、溪水暴漲與舊山線鐵道自行車遇雨的行程判斷方式。"
+  image="/og-cover.jpg"
+  schema={[pageSchema, faqSchema]}
+>
+  <header class="section-shell pt-10 sm:pt-16">
+    <nav class="mb-7 flex items-center gap-2 text-xs font-bold text-stone" aria-label="麵包屑">
+      <a href="/" class="hover:text-brick-700">首頁</a>
+      <Icon name="chevron" size={13} />
+      <span aria-current="page">天氣與行程判斷</span>
+    </nav>
+
+    <div class="grid items-end gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+      <div>
+        <span class="eyebrow">天氣與行程判斷</span>
+        <h1
+          class="editorial-title mt-5 max-w-4xl text-[clamp(2.4rem,6vw,4.6rem)] font-bold leading-[1] text-ink"
+        >
+          龍騰斷橋天氣，
+          <br />
+          決定你今天怎麼排
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-8 text-stone sm:text-lg">
+          這一頁把即時預報、三義山區的天氣特性，以及「下雨到底還能不能去」放在一起。
+          先看天氣，再決定行程順序與裝備，比到了現場才改變計畫容易得多。
+        </p>
+      </div>
+
+      <ul class="grid gap-2 text-sm">
+        {
+          anchors.map((anchor) => (
+            <li>
+              <a
+                href={anchor.href}
+                class="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-white/70 px-4 py-3 font-bold text-ink transition hover:border-brick-200 hover:bg-white"
+              >
+                {anchor.label}
+                <Icon name="arrow" size={16} class="text-brick-600" />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </header>
+
+  <section
+    id="now"
+    class="section-shell mt-12 scroll-mt-24"
+    aria-label="龍騰斷橋即時天氣與出行建議"
+  >
+    <WeatherPanel server:defer>
+      <WeatherFallback slot="fallback" />
+    </WeatherPanel>
+  </section>
+
+  <section id="mountain" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">山區特性</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      為什麼這裡的天氣，和苗栗市、台中不一樣
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      龍騰斷橋位在三義的淺山山谷，不是平地測站能完整代表的位置。
+      先理解這裡的天氣怎麼形成，你就能判斷預報數字要打多少折扣。
+    </p>
+
+    <ul class="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        mountainTraits.map((trait) => (
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-9 items-center justify-center rounded-full bg-forest-100 text-forest-700">
+              <Icon name={trait.icon} size={18} />
+            </span>
+            <h3 class="mt-4 font-extrabold text-ink">{trait.title}</h3>
+            <p class="mt-2 text-sm leading-7 text-stone">{trait.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="section-shell mt-16">
+    <span class="eyebrow">判讀方法</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      用預報決定今天的順序
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      同一份預報，有人看到「下雨」就取消，有人卻能順利走完行程。差別在於有沒有把它轉成順序。
+    </p>
+
+    <ol class="mt-9 grid gap-3 sm:grid-cols-2">
+      {
+        steps.map((step, index) => (
+          <li class="flex gap-4 rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brick-100 text-xs font-black text-brick-700">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>
+              <strong class="block font-extrabold text-ink">{step.title}</strong>
+              <span class="mt-2 block text-sm leading-7 text-stone">{step.text}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+
+  <section id="rain" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">雨天判斷</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      下雨還能不能去？看雨勢的種類
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      關鍵不是「有沒有下雨」，而是「下哪一種雨」。同樣是雨天，決策可能完全相反。
+    </p>
+
+    <ul class="mt-9 grid gap-3">
+      {
+        rainGuides.map((guide) => (
+          <li
+            class:list={[
+              "grid gap-4 rounded-2xl border p-5 sm:grid-cols-[0.42fr_1fr]",
+              toneClass[guide.tone],
+            ]}
+          >
+            <div>
+              <p class="font-black">{guide.level}</p>
+            </div>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div>
+                <p class="text-[0.68rem] font-black tracking-[0.12em] uppercase opacity-70">
+                  現場狀況
+                </p>
+                <p class="mt-1.5 text-sm leading-7 opacity-90">{guide.conditions}</p>
+              </div>
+              <div>
+                <p class="text-[0.68rem] font-black tracking-[0.12em] uppercase opacity-70">
+                  建議做法
+                </p>
+                <p class="mt-1.5 text-sm leading-7 opacity-90">{guide.advice}</p>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="railbike" class="section-shell mt-16 scroll-mt-24">
+    <div class="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <span class="eyebrow">雨天搭乘</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          舊山線鐵道自行車遇到下雨
+        </h2>
+        <p class="mt-5 text-sm leading-8 text-stone">
+          鐵道自行車是戶外運具，山區路線的風雨體感比平地明顯。
+          是否照常行駛或調整班次，屬於營運單位依當時天候與路線安全的判斷，
+          本站不寫死停駛標準，而是整理你出發前該確認的事。
+        </p>
+
+        <ul class="mt-7 grid gap-2.5 text-sm leading-7 text-stone">
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>
+              出發前先看營運單位的當日公告，並確認可聯絡的電話或線上客服，
+              而不是只依天氣預報自行判斷。
+            </span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>
+              雷雨、強風與豪雨特報是最容易被調整的條件；山區路線的影響又比短程路線大。
+            </span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>
+              就算照常行駛，雨衣也比雨傘實用；貴重物品先做防水，並準備一件可替換的上衣。
+            </span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>
+              若班次被取消，多數情況會以改期或退費處理，實際規則依營運單位公告為準。
+            </span>
+          </li>
+        </ul>
+
+        <div class="mt-7 flex flex-wrap gap-3 text-sm">
+          <a
+            href="/rail-bike/"
+            class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 font-bold text-white transition hover:bg-forest-600"
+          >
+            <Icon name="rail" size={16} />
+            鐵道自行車攻略
+          </a>
+          <a
+            href="/rail-bike-routes/"
+            class="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2.5 font-bold text-ink transition hover:border-brick-200"
+          >
+            <Icon name="route" size={16} />
+            A、B、C 路線比較
+          </a>
+        </div>
+      </div>
+
+      <div class="rounded-[1.75rem] border border-black/8 bg-white/72 p-6 sm:p-8">
+        <h3 class="font-extrabold text-ink">四季裝備關鍵字</h3>
+        <dl class="mt-5 grid gap-3 text-sm">
+          {
+            seasonKeywords.map((item) => (
+              <div class="rounded-xl bg-cream/70 px-4 py-3">
+                <dt class="font-black text-ink">{item.season}</dt>
+                <dd class="mt-1 leading-7 text-stone">{item.text}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        <a
+          href="/seasonal-guide/"
+          class="mt-5 inline-flex items-center gap-2 text-sm font-black text-brick-700"
+        >
+          看完整的四季與氣候攻略
+          <Icon name="arrow" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">常見問題</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      旅客最常問的天氣問題
+    </h2>
+
+    <div class="mt-9 grid max-w-3xl gap-3">
+      {
+        faqs.map((item) => (
+          <details class="group rounded-2xl border border-black/8 bg-white/72 px-5 py-4">
+            <summary class="cursor-pointer list-none font-extrabold text-ink marker:content-none">
+              <span class="flex items-start justify-between gap-4">
+                {item.q}
+                <Icon
+                  name="chevron"
+                  size={17}
+                  class="mt-1 shrink-0 text-brick-600 transition group-open:rotate-90"
+                />
+              </span>
+            </summary>
+            <p class="mt-3 text-sm leading-8 text-stone">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <SourcesSection
+    heading="天氣資料來源與判斷說明"
+    intro={`本頁天氣資料為 ${ATTRACTION.cityZh}山區位置的數值預報，經整理後轉為行程建議；建議內容屬本站依條件推導的判斷，不代表官方公告，也不代表道路或景點已確認開放。`}
+  />
+</BaseLayout>

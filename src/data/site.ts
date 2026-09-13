@@ -1,18 +1,21 @@
+import { ATTRACTION } from "./attraction";
+
 export const SITE = {
   name: "Longteng Bridge",
   shortName: "龍騰斷橋指南",
   description:
     "苗栗龍騰斷橋與魚藤坪斷橋旅遊指南，整理交通、停車、舊山線鐵道自行車與三義行程。",
   url: "https://longtengbridge.com",
-  mapUrl:
-    "https://www.google.com/maps/place/%E9%B1%BC%E8%97%A4%E5%9D%AA%E6%96%AD%E6%A1%A5/@24.3583476,120.7734834,17z/data=!4m7!3m6!1s0x34690418138a927f:0x4e258aa69595ff3f!8m2!3d24.3585179!4d120.7740367!15sCgzpvo3pqLDmlrfmqYtaECIO6b6N6aiwIOaWtyDmqYuSARFoZXJpdGFnZV9idWlsZGluZ-ABAA!16s%2Fg%2F121ffg9y?entry=tts&g_ep=EgoyMDI2MDcyMi4wIPu8ASoASAFQAw%3D%3D&skid=e86b33fd-e0b9-4381-a825-f8bf9c5bb006",
+  mapUrl: ATTRACTION.mapsShareUrl,
   bookingUrl: "https://www.oml-railbike.com/",
 };
 
 export const NAV = [
   { label: "景點攻略", href: "/visit/" },
+  { label: "四季攻略", href: "/seasonal-guide/" },
   { label: "交通停車", href: "/transportation/" },
   { label: "鐵道自行車", href: "/rail-bike/" },
+  { label: "訪客服務", href: "/facilities/" },
   { label: "一日遊", href: "/one-day-trip/" },
   { label: "歷史故事", href: "/history/" },
   { label: "周邊景點", href: "/nearby-attractions/" },
@@ -24,6 +27,12 @@ export const GUIDE_LINKS = [
     text: "先看參觀方式、停留時間與行前重點。",
     href: "/visit/",
     kicker: "景點攻略",
+  },
+  {
+    title: "龍騰斷橋天氣與雨天判斷",
+    text: "即時預報、山區起霧與雨勢判斷，先看天氣再排行程。",
+    href: "/weather/",
+    kicker: "天氣決策",
   },
   {
     title: "交通與 Google 地圖",
@@ -55,6 +64,30 @@ export const GUIDE_LINKS = [
     href: "/one-day-trip/",
     kicker: "順遊提案",
   },
+  {
+    title: "什麼季節來最合適",
+    text: "各月氣溫、雨量、溪流水況與生態觀察重點。",
+    href: "/seasonal-guide/",
+    kicker: "四季與氣候",
+  },
+  {
+    title: "洗手間、停車與補給",
+    text: "設施類型與分布邏輯，先知道需求在哪裡解決。",
+    href: "/facilities/",
+    kicker: "訪客服務",
+  },
+  {
+    title: "斷橋為什麼會斷",
+    text: "磚拱力學、地震破壞原理與訪客該守的界線。",
+    href: "/science-and-responsibility/",
+    kicker: "科普與責任",
+  },
+  {
+    title: "魚藤坪為什麼叫龍騰",
+    text: "地名由來、地方說法與關刀山的因緣。",
+    href: "/legends/",
+    kicker: "地名與傳說",
+  },
 ];
 
 export const IMAGE_CREDITS = [
@@ -81,5 +114,47 @@ export const IMAGE_CREDITS = [
     author: "Cheng-en Cheng",
     license: "CC BY-SA 2.0",
     url: "https://commons.wikimedia.org/wiki/File:Train_passing_the_Longteng_Broken_Bridge_2010-06-05.jpg",
+  },
+  {
+    name: "魚藤坪斷橋橋體細部（磚拱與補強）",
+    author: "Rasputinemark",
+    license: "CC BY-SA 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:%E9%AD%9A%E8%97%A4%E5%9D%AA%E6%96%B7%E6%A9%8B%EF%BC%BF%E6%A9%8B%E9%AB%94_1.jpg",
+  },
+  {
+    name: "魚藤坪斷橋後方視角",
+    author: "湛文甫",
+    license: "CC BY-SA 3.0",
+    url: "https://commons.wikimedia.org/wiki/File:%E9%AD%9A%E8%97%A4%E5%9D%AA%E6%96%B7%E6%A9%8B-%E5%BE%8C%E6%96%B9.jpg",
+  },
+  {
+    name: "魚藤坪斷橋全景",
+    author: "王崑",
+    license: "CC BY-SA 3.0",
+    url: "https://commons.wikimedia.org/wiki/File:%E7%BE%8E%E5%93%89%E9%AD%9A%E8%97%A4%E5%9D%AA%E6%96%B7%E6%A9%8B.JPG",
+  },
+  {
+    name: "勝興車站隧道",
+    author: "SElefant",
+    license: "CC BY-SA 4.0",
+    url: "https://commons.wikimedia.org/wiki/File:TRA_Shengsing_Station_Tunnel.jpg",
+  },
+  {
+    name: "三義木雕村",
+    author: "lienyuan lee",
+    license: "CC BY 3.0",
+    url: "https://commons.wikimedia.org/wiki/File:Sanyi_Woodcarving_Village_%E4%B8%89%E7%BE%A9%E6%9C%A8%E9%9B%95%E6%9D%91_-_panoramio.jpg",
+  },
+  {
+    name: "1915 年魚藤坪鐵橋歷史影像（《臺灣寫真帖》）",
+    author: "《臺灣寫真帖》1915 年，作者不詳",
+    license: "Public domain",
+    url: "https://commons.wikimedia.org/wiki/File:The_railway_bridge_crossing_the_Gyotopin_River.jpg",
+  },
+  {
+    name: "鯉魚潭水庫",
+    author: "lienyuan lee",
+    license: "CC BY 3.0",
+    url: "https://commons.wikimedia.org/wiki/File:%E9%AF%89%E9%AD%9A%E6%BD%AD%E6%B0%B4%E5%BA%AB_Liyutan_Reservoir_-_panoramio.jpg",
   },
 ];

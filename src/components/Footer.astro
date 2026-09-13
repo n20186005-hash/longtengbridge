@@ -2,6 +2,11 @@
 import Logo from "./Logo.astro";
 import Icon from "./Icon.astro";
 import { NAV, SITE } from "../data/site";
+import { ATTRACTION, GOOGLE_REVIEW } from "../data/attraction";
+import { EN_HOME, enHrefFor } from "../data/i18n";
+
+/** 語言切換：優先指向這一頁的英文版，沒有英文版時退回英文首頁。 */
+const englishHref = enHrefFor(Astro.url.pathname) ?? EN_HOME;
 ---
 
 <footer class="mt-24 bg-forest-700 text-white">
@@ -28,8 +33,13 @@ import { NAV, SITE } from "../data/site";
       </p>
       <nav class="mt-5 grid grid-cols-2 gap-x-4 gap-y-3 text-sm" aria-label="頁尾導覽">
         {NAV.map((item) => <a class="text-white/75 hover:text-white" href={item.href}>{item.label}</a>)}
+        <a class="text-white/75 hover:text-white" href="/weather/">天氣預報</a>
         <a class="text-white/75 hover:text-white" href="/parking/">停車指南</a>
         <a class="text-white/75 hover:text-white" href="/family-guide/">親子長輩</a>
+        <a class="text-white/75 hover:text-white" href="/photo-spots/">拍照點位</a>
+        <a class="text-white/75 hover:text-white" href="/science-and-responsibility/">科普與責任</a>
+        <a class="text-white/75 hover:text-white" href="/legends/">地名與傳說</a>
+        <a class="text-white/75 hover:text-white" href="/accessibility/">無障礙動線</a>
       </nav>
     </div>
 
@@ -38,6 +48,7 @@ import { NAV, SITE } from "../data/site";
         站點資訊
       </p>
       <nav class="mt-5 grid gap-3 text-sm" aria-label="站點資訊">
+        <a class="text-white/75 hover:text-white" href={englishHref} hreflang="en" lang="en">英文版</a>
         <a class="text-white/75 hover:text-white" href="/about/">關於本站</a>
         <a class="text-white/75 hover:text-white" href="/sources/">資料與圖片來源</a>
         <a class="text-white/75 hover:text-white" href="/updates/">資訊更新原則</a>
@@ -46,10 +57,24 @@ import { NAV, SITE } from "../data/site";
     </div>
   </div>
   <div class="border-t border-white/10">
-    <div
-      class="section-shell flex flex-col gap-2 py-6 text-xs text-white/70 sm:flex-row sm:items-center sm:justify-between"
-    >
-      <p>© {new Date().getFullYear()} Longteng Bridge</p>
+    <div class="section-shell flex flex-col gap-4 py-6 text-xs leading-6 text-white/70">
+      <p>
+        <strong class="font-black text-white/85">{ATTRACTION.shortNameZh}（{ATTRACTION.officialName}／{ATTRACTION.fullName}）</strong>
+        <span aria-hidden="true">・</span>
+        {ATTRACTION.postalCode} {ATTRACTION.cityZh}{ATTRACTION.streetAddress}，{ATTRACTION.stateZh}
+        <span aria-hidden="true">・</span>
+        景點評分同步自 Google 地圖（{GOOGLE_REVIEW.rating} 分，{GOOGLE_REVIEW.reviewCount.toLocaleString("en-US")} 則評論，{GOOGLE_REVIEW.checkedAtDisplay} 核對）
+      </p>
+      <p>
+        LongtengBridge.com 是獨立旅遊資訊網站，並非龍騰斷橋、苗栗縣政府或舊山線鐵道自行車的官方網站。票價、班次與開放狀態請以相關官方單位公告為準。
+      </p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {new Date().getFullYear()} Longteng Bridge</p>
+        <p class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <a class="hover:text-white" href="/sources/">資料與圖片來源</a>
+          <a class="hover:text-white" href="/privacy/">隱私政策</a>
+        </p>
+      </div>
     </div>
   </div>
 </footer>

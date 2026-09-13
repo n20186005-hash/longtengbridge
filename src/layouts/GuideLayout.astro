@@ -1,15 +1,25 @@
 ---
 import { Image } from "astro:assets";
-import { render, type CollectionEntry } from "astro:content";
+import { getCollection, render, type CollectionEntry } from "astro:content";
 import BaseLayout from "./BaseLayout.astro";
 import GoogleMap from "../components/GoogleMap.astro";
 import Icon from "../components/Icon.astro";
+import SourcesSection from "../components/SourcesSection.astro";
 import hero from "../assets/longteng-hero.jpg";
 import bridgeSide from "../assets/longteng-side.jpg";
 import ironBridge from "../assets/iron-bridge.jpg";
 import shengxing from "../assets/shengxing-station.jpg";
 import oldLine from "../assets/old-line.jpg";
+import bridgeBody from "../assets/bridge-body.jpg";
+import bridgeRear from "../assets/bridge-rear.jpg";
+import bridgeMorning from "../assets/bridge-morning.jpg";
+import stationTunnel from "../assets/station-tunnel.jpg";
+import woodcarving from "../assets/woodcarving-village.jpg";
+import historicBridge from "../assets/historic-bridge.jpg";
+import reservoir from "../assets/reservoir.jpg";
 import { SITE } from "../data/site";
+import { ATTRACTION } from "../data/attraction";
+import { relatedSlugsFor } from "../data/related-guides";
 
 interface Props {
   guide: CollectionEntry<"guides">;
@@ -17,9 +27,29 @@ interface Props {
 
 const { guide } = Astro.props;
 const { Content, headings } = await render(guide);
-const images = { hero, bridgeSide, ironBridge, shengxing, oldLine };
+const images = {
+  hero,
+  bridgeSide,
+  ironBridge,
+  shengxing,
+  oldLine,
+  bridgeBody,
+  bridgeRear,
+  bridgeMorning,
+  stationTunnel,
+  woodcarving,
+  historicBridge,
+  reservoir,
+};
 const currentImage = images[guide.data.image];
 const canonicalUrl = `https://longtengbridge.com/${guide.data.slug}/`;
+const attractionId = `${SITE.url}/#attraction`;
+
+// 延伸閱讀：依對應表挑選，標題與摘要直接取自內容集合。
+const allGuides = await getCollection("guides");
+const relatedGuides = relatedSlugsFor(guide.data.slug)
+  .map((slug) => allGuides.find((entry) => entry.data.slug === slug))
+  .filter((entry): entry is CollectionEntry<"guides"> => Boolean(entry));
 
 const articleSchema = {
   "@context": "https://schema.org",
@@ -32,7 +62,12 @@ const articleSchema = {
   author: {
     "@type": "Organization",
     name: "Longteng Bridge 編輯部",
+    url: SITE.url,
   },
+  publisher: { "@id": `${SITE.url}/#organization` },
+  about: { "@id": attractionId },
+  mentions: { "@id": attractionId },
+  isPartOf: { "@id": `${SITE.url}/#website` },
 };
 
 const breadcrumbSchema = {
@@ -95,13 +130,22 @@ const breadcrumbSchema = {
               <Icon name="compass" size={15} />
               直接看重點
             </a>
+            <a
+              href={ATTRACTION.mapsShareUrl}
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3.5 py-2 text-white"
+            >
+              <Icon name="map" size={15} />
+              開啟 Google 地圖導航
+            </a>
           </div>
         </div>
 
         <figure class="overflow-hidden rounded-[1.75rem] bg-forest-50 shadow-soft">
           <Image
             src={currentImage}
-            alt={guide.data.title}
+            alt={`${guide.data.title}｜${ATTRACTION.shortNameZh}（${ATTRACTION.officialName}）${ATTRACTION.cityZh}${ATTRACTION.stateZh}`}
             widths={[640, 960, 1280]}
             sizes="(min-width: 1024px) 42vw, 100vw"
             format="avif"
@@ -125,6 +169,31 @@ const breadcrumbSchema = {
         }
       </div>
     </header>
+
+    <div class="section-shell mt-10">
+      <a
+        href="/weather/"
+        class="flex flex-col gap-3 rounded-2xl border border-black/8 bg-white/72 px-5 py-4 transition hover:border-brick-200 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <span class="flex items-start gap-3">
+          <span
+            class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-full bg-forest-100 text-forest-700"
+          >
+            <Icon name="droplet" size={16} />
+          </span>
+          <span>
+            <strong class="block text-sm font-extrabold text-ink">出發前先看龍騰斷橋天氣</strong>
+            <span class="mt-1 block text-xs leading-6 text-stone">
+              即時預報、山區起霧與午後雷雨，以及下雨還能不能去的判斷方式。
+            </span>
+          </span>
+        </span>
+        <span class="inline-flex shrink-0 items-center gap-2 text-sm font-black text-brick-700">
+          天氣與行程判斷
+          <Icon name="arrow" size={16} />
+        </span>
+      </a>
+    </div>
 
     <div class="section-shell mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div id="guide-content" class="min-w-0">
@@ -198,5 +267,41 @@ const breadcrumbSchema = {
         </div>
       </aside>
     </div>
+
+    {
+      relatedGuides.length > 0 && (
+        <section class="section-shell mt-4 pb-4">
+          <span class="eyebrow">延伸閱讀</span>
+          <h2 class="editorial-title mb-6 mt-4 text-3xl font-bold text-ink sm:text-4xl">
+            接著讀這一頁
+          </h2>
+          <ul class="grid gap-3 sm:grid-cols-3">
+            {relatedGuides.map((entry) => (
+              <li class="flex">
+                <a
+                  href={`/${entry.data.slug}/`}
+                  class="flex h-full flex-col rounded-2xl border border-black/8 bg-white p-5 shadow-soft transition hover:border-brick-300"
+                >
+                  <span class="text-[0.66rem] font-black tracking-[0.14em] text-brick-700 uppercase">
+                    {entry.data.eyebrow}
+                  </span>
+                  <span class="mt-3 line-clamp-2 font-extrabold leading-6 text-ink">
+                    {entry.data.title}
+                  </span>
+                  <span class="mt-2 line-clamp-3 text-xs leading-6 text-stone">
+                    {entry.data.description}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
   </article>
+
+  <SourcesSection
+    heading="本篇資料來源"
+    intro="本篇攻略的歷史、名稱與位置以官方資料為基礎；票價、班次與停車等易變資訊不在頁面寫死，而是提供判斷方式與來源連結。"
+  />
 </BaseLayout>

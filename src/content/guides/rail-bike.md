@@ -6,7 +6,7 @@ slug: "rail-bike"
 eyebrow: "鐵道自行車"
 intro: "鐵道自行車不是進入龍騰斷橋的唯一方式，而是從舊山線軌道、隧道與魚藤坪鐵橋理解這片山谷的另一種旅行。先選想看的景色，再看取票站與搭乘規則。"
 readTime: "約 6 分鐘讀完"
-image: "oldLine"
+image: "stationTunnel"
 facts:
   - label: "路線數"
     value: "A、B、C 三種"

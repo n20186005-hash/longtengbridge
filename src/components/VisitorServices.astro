@@ -1,0 +1,114 @@
+---
+import Icon from "./Icon.astro";
+import { FACILITY_CATEGORIES, PRE_TRIP_CHECKLIST } from "../data/facilities";
+---
+
+<section class="section-shell pt-20 sm:pt-28" aria-labelledby="services-heading">
+  <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <div class="max-w-2xl">
+      <p class="text-xs font-black tracking-[0.2em] text-brick-700 uppercase">
+        現場與周邊
+      </p>
+      <h2
+        id="services-heading"
+        class="editorial-title mt-4 text-3xl font-bold leading-tight text-ink sm:text-4xl"
+      >
+        洗手間、停車、補給，<br />先知道就不會慌
+      </h2>
+      <p class="mt-5 text-sm leading-7 text-stone sm:text-base">
+        山區設施密度遠低於市區，這裡用「設施類型與分布邏輯」說明該在哪裡解決需求。
+        本站為非營利科普網站，只描述類型、不推薦也不比較任何特定商家；
+        實際開放時間與收費請以現場標示與官方公告為準。
+      </p>
+    </div>
+    <a
+      href="/facilities/"
+      class="inline-flex shrink-0 items-center gap-2 rounded-full border border-black/10 px-5 py-3 text-sm font-black text-ink transition hover:border-forest-600 hover:text-forest-700"
+    >
+      <Icon name="map" size={17} />
+      訪客服務總覽
+    </a>
+  </div>
+
+  <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      FACILITY_CATEGORIES.map((category) => (
+        <article class="flex flex-col rounded-[1.75rem] border border-black/8 bg-white p-6 shadow-soft">
+          <div class="flex items-center gap-3">
+            <span class="flex size-10 items-center justify-center rounded-xl bg-forest-50 text-forest-700">
+              <Icon name={category.icon} size={20} />
+            </span>
+            <h3 class="editorial-title text-lg font-bold text-ink">{category.title}</h3>
+          </div>
+
+          <p class="mt-4 text-sm leading-7 text-ink">{category.verdict}</p>
+
+          <details class="mt-4 rounded-2xl bg-cream/70 px-4 py-3">
+            <summary class="cursor-pointer text-xs font-black text-forest-700 marker:content-none">
+              分區說明
+            </summary>
+            <dl class="mt-3 space-y-3">
+              {category.zones.map((zone) => (
+                <div>
+                  <dt class="text-[0.68rem] font-black tracking-[0.08em] text-stone uppercase">
+                    {zone.zone}
+                  </dt>
+                  <dd class="mt-1 text-xs leading-6 text-stone">{zone.detail}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
+
+          <ul class="mt-4 space-y-2">
+            {category.tips.map((tip) => (
+              <li class="flex gap-2 text-xs leading-6 text-stone">
+                <Icon name="check" size={13} class="mt-1.5 shrink-0 text-forest-600" />
+                <span>{tip}</span>
+              </li>
+            ))}
+          </ul>
+
+          {
+            category.links && category.links.length > 0 && (
+              <div class="mt-5 flex flex-wrap gap-2">
+                {category.links.map((link) => (
+                  <a
+                    href={link.href}
+                    class="rounded-full border border-black/10 px-3 py-1.5 text-[0.68rem] font-black text-forest-700 transition hover:border-forest-600"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            )
+          }
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="mt-6 rounded-[1.75rem] border border-black/8 bg-forest-700 p-6 text-white sm:p-8">
+    <p class="flex items-center gap-2 text-xs font-black tracking-[0.16em] text-white/55 uppercase">
+      <Icon name="check" size={15} />
+      出發前檢查
+    </p>
+    <h3 class="editorial-title mt-3 text-xl font-bold sm:text-2xl">三件事先確認，行程就少一半意外</h3>
+    <div class="mt-6 grid gap-5 sm:grid-cols-3">
+      {
+        PRE_TRIP_CHECKLIST.map((group) => (
+          <div class="rounded-2xl border border-white/10 bg-white/6 p-5">
+            <p class="text-sm font-black">{group.title}</p>
+            <ul class="mt-3 space-y-2">
+              {group.items.map((item) => (
+                <li class="flex gap-2 text-xs leading-6 text-white/70">
+                  <span class="mt-2 size-1.5 shrink-0 rounded-full bg-emerald-300" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

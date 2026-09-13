@@ -1,0 +1,500 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+import GoogleMap from "../../components/GoogleMap.astro";
+import { OFFICIAL_SOURCES } from "../../data/attraction";
+import { SITE } from "../../data/site";
+
+const PAGE_URL = `${SITE.url}/en/rail-bike/`;
+
+/** 三條路線的差異：只描述「看什麼、從哪上車、適合誰」，票價與班次一律不寫死。 */
+const routes = [
+  {
+    name: "Route A",
+    covers: "Shengxing Station, the Yutengping Iron Bridge and the south section remains",
+    board: "Shengxing Station area",
+    pick: "You want to see the south section and understand how the two surviving ends of the old bridge relate to the valley.",
+  },
+  {
+    name: "Route B",
+    covers: "Longteng Station, No. 2 tunnel, Shengxing Station and the old street",
+    board: "Longteng Station",
+    pick: "The old street, the station and the tunnels matter more to you than the bridges.",
+  },
+  {
+    name: "Route C",
+    covers: "The Yutengping Iron Bridge and the tunnel group",
+    board: "Longteng Station",
+    pick: "You are here for engineering, tunnels and valley scenery rather than the old street.",
+  },
+];
+
+/** 三個常被混淆的下車／導航點。 */
+const boarding = [
+  {
+    name: "Longteng Bridge",
+    local: "龍騰斷橋",
+    what: "The monument itself, on Miaoli County Road 49",
+    use: "The red-brick arches and the main viewing area — no booking, no boarding point",
+  },
+  {
+    name: "Longteng Station",
+    local: "龍騰站",
+    what: "The rail bike boarding station further up the valley",
+    use: "Departure point for Routes B and C",
+  },
+  {
+    name: "Shengxing Station",
+    local: "勝興車站",
+    what: "The old mountain line station at about 402 m, with an old street",
+    use: "Departure point for Route A, plus food and the station building",
+  },
+];
+
+/** 預約前的檢查清單（規則由營運單位訂定，可能調整，因此只描述要確認什麼）。 */
+const beforeYouBook = [
+  {
+    title: "Pick the view first, then the route",
+    text: "Start from what you actually want to see — the south section, the old street or the tunnels — and let the route follow. Picking a departure time before deciding the scenery is the usual way to end up on the wrong route.",
+  },
+  {
+    title: "Boarding points are not interchangeable",
+    text: "Longteng Bridge, Longteng Station and Shengxing Station are three different places on one narrow road. Entering the wrong name into a maps app can put you half an hour of mountain road away from your booked departure.",
+  },
+  {
+    title: "Check the age, height and health rules",
+    text: "Child age and height limits, pregnancy and mobility restrictions, and safety requirements are set by the operator and can change. Read the current booking terms rather than a screenshot in an old blog post.",
+  },
+  {
+    title: "Budget time for parking and queues",
+    text: "Car parking at the stations is limited and filling up in the middle of the day is normal. Arriving with time to spare before your booked slot is more useful than any navigation shortcut.",
+  },
+];
+
+const faqs = [
+  {
+    q: "Do I need to ride the rail bike to see Longteng Bridge?",
+    a: "No. The north section of the brick bridge can be visited from the main viewing area next to the road, free and without a booking. The rail bike is an extra layer: it puts you on the original trackbed, through tunnels and across the Yutengping Iron Bridge, and it is the practical way to reach the south section remains.",
+  },
+  {
+    q: "Which route shows the south section of the broken bridge?",
+    a: "Route A is the one that includes the south section remains, together with the Yutengping Iron Bridge and Shengxing Station. If seeing both surviving ends of the old brick bridge in one trip is the point, start from Route A rather than Route B.",
+  },
+  {
+    q: "Where do I board, and how do I avoid the wrong station?",
+    a: "Routes B and C board at Longteng Station; Route A boards in the Shengxing Station area. Longteng Bridge the monument is a third, separate place, with no boarding point at all. After booking, treat the pickup point printed on your booking as the destination, not the name of the monument.",
+  },
+  {
+    q: "Can children and older visitors ride?",
+    a: "There are age and height rules for young children, and restrictions that may apply to pregnancy or limited mobility. These are set by the operator and can change, so check the current booking terms for your group before you pay, and remember that parts of the route run over an elevated bridge and through tunnels.",
+  },
+  {
+    q: "Does the rail bike run in the rain?",
+    a: "It is an outdoor service, and whether it runs or is adjusted is decided by the operator on the day, based on the weather and route safety. Thunderstorms, strong wind and heavy-rain warnings are the conditions most likely to change a departure. Check the operator's daily notice before you travel, and take a rain jacket rather than an umbrella.",
+  },
+  {
+    q: "Do I need to book in advance?",
+    a: "Yes — the rail bike is a reserved, ticketed service with its own timetable, not a walk-up attraction. Weekends and holidays are the days most likely to sell out, so book early if your dates are fixed. Fares, schedules and booking rules change, which is why this guide links to the operator instead of printing numbers that go stale.",
+  },
+];
+
+const anchors = [
+  { label: "Which route to choose", href: "#routes" },
+  { label: "Where to board", href: "#boarding" },
+  { label: "Before you book", href: "#booking" },
+  { label: "Rain and suspension", href: "#weather" },
+  { label: "Common questions", href: "#faq" },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${PAGE_URL}#faq`,
+  inLanguage: "en",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${PAGE_URL}#webpage`,
+  url: PAGE_URL,
+  name: "Old Mountain Line Rail Bike at Longteng Bridge",
+  inLanguage: "en",
+  about: { "@id": `${SITE.url}/#attraction` },
+  isPartOf: { "@id": `${SITE.url}/#website` },
+  significantLink: [`${SITE.url}/en/`, `${SITE.url}/en/transportation/`, `${SITE.url}/rail-bike/`],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "English guide", item: `${SITE.url}/en/` },
+    { "@type": "ListItem", position: 2, name: "Rail bike routes", item: PAGE_URL },
+  ],
+};
+---
+
+<BaseLayout
+  lang="en"
+  title="Old Mountain Line Rail Bike｜Routes, Boarding Points and Longteng Bridge"
+  description="How to choose between the Old Mountain Line rail bike Routes A, B and C at Longteng Bridge in Sanyi, Miaoli: what each route sees, where you board, and what to check before booking."
+  imageAlt="The Yutengping Iron Bridge and the old mountain line rail bike route in Sanyi, Miaoli"
+  schema={[pageSchema, faqSchema, breadcrumbSchema]}
+>
+  <header class="section-shell pt-10 sm:pt-16">
+    <nav class="mb-7 flex items-center gap-2 text-xs font-bold text-stone" aria-label="Breadcrumb">
+      <a href="/en/" class="hover:text-brick-700">English guide</a>
+      <Icon name="chevron" size={13} />
+      <span aria-current="page">Rail bike routes</span>
+    </nav>
+
+    <span class="eyebrow">Old Mountain Line rail bike</span>
+    <h1
+      class="editorial-title mt-5 max-w-4xl text-[clamp(2.3rem,5.6vw,4.4rem)] font-bold leading-[1.02] text-ink"
+    >
+      Riding the old line
+      <br />
+      past Longteng Bridge
+    </h1>
+    <p class="mt-6 max-w-3xl text-base leading-8 text-stone sm:text-lg">
+      When the trains stopped, part of the disused mountain line was reopened as a rail bike route. It
+      puts you on the original trackbed, through tunnels and across the Yutengping Iron Bridge — the
+      only way to reach the south section remains and to see the valley from track level.
+    </p>
+
+    <div class="mt-6 flex flex-wrap gap-3 text-xs font-bold">
+      <a
+        href={SITE.bookingUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 rounded-full bg-brick-600 px-3.5 py-2 text-white"
+      >
+        <Icon name="rail" size={15} />
+        Operator booking information
+      </a>
+      <a
+        href="#routes"
+        class="inline-flex items-center gap-2 rounded-full bg-brick-100 px-3.5 py-2 text-brick-700"
+      >
+        <Icon name="compass" size={15} />
+        Compare the routes
+      </a>
+    </div>
+
+    <div class="mt-10 grid gap-3 sm:grid-cols-3">
+      {
+        [
+          {
+            icon: "rail" as const,
+            label: "Routes",
+            value: "A, B and C",
+            note: "Each sees a different part of the old line",
+          },
+          {
+            icon: "train" as const,
+            label: "Boarding",
+            value: "Longteng or Shengxing",
+            note: "Different stations, not interchangeable",
+          },
+          {
+            icon: "book" as const,
+            label: "Booking",
+            value: "Reserved and ticketed",
+            note: "Not a walk-up attraction",
+          },
+        ].map((item) => (
+          <div class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-9 items-center justify-center rounded-full bg-forest-100 text-forest-700">
+              <Icon name={item.icon} size={18} />
+            </span>
+            <p class="mt-4 text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+              {item.label}
+            </p>
+            <p class="mt-1.5 font-extrabold text-ink">{item.value}</p>
+            <p class="mt-1 text-sm leading-7 text-stone">{item.note}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <ul class="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        anchors.map((anchor) => (
+          <li>
+            <a
+              href={anchor.href}
+              class="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-white/70 px-4 py-3 text-sm font-bold text-ink transition hover:border-brick-200 hover:bg-white"
+            >
+              {anchor.label}
+              <Icon name="arrow" size={16} class="text-brick-600" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </header>
+
+  <section id="routes" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Route choice</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Which route should you choose?
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      The three routes overlap in places but answer different questions. Decide what you most want to
+      see — the south section, the old street or the tunnels — and the route follows from that.
+    </p>
+
+    <div class="mt-9 overflow-x-auto">
+      <table class="w-full min-w-[48rem] border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-black/10 text-left">
+            <th class="px-4 py-3 font-black text-ink">Route</th>
+            <th class="px-4 py-3 font-black text-ink">What it covers</th>
+            <th class="px-4 py-3 font-black text-ink">Board from</th>
+            <th class="px-4 py-3 font-black text-ink">Choose it if</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            routes.map((route) => (
+              <tr class="border-b border-black/8 align-top">
+                <td class="px-4 py-4">
+                  <strong class="font-extrabold text-ink">{route.name}</strong>
+                </td>
+                <td class="px-4 py-4 leading-7 text-stone">{route.covers}</td>
+                <td class="px-4 py-4 leading-7 text-stone">{route.board}</td>
+                <td class="px-4 py-4 leading-7 text-stone">{route.pick}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      Route contents can be adjusted for operations and maintenance, so confirm the current alignment
+      against the operator's own information before you commit to a booking. The routes are not ranked
+      here — only Route A includes the south section remains, and that single difference decides the
+      choice for many visitors.
+    </p>
+  </section>
+
+  <section id="boarding" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">The one mistake to avoid</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Where you board, and where you do not
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      "Longteng" appears in more than one place name here, and the monument itself has no boarding
+      point at all. Decide which of these three you are heading to before you set off.
+    </p>
+
+    <div class="mt-9 overflow-x-auto">
+      <table class="w-full min-w-[44rem] border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-black/10 text-left">
+            <th class="px-4 py-3 font-black text-ink">Place</th>
+            <th class="px-4 py-3 font-black text-ink">What it is</th>
+            <th class="px-4 py-3 font-black text-ink">Why you would go there</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            boarding.map((place) => (
+              <tr class="border-b border-black/8 align-top">
+                <td class="px-4 py-4">
+                  <strong class="block font-extrabold text-ink">{place.name}</strong>
+                  <span class="mt-1 block text-xs leading-6 text-stone">{place.local}</span>
+                </td>
+                <td class="px-4 py-4 leading-7 text-stone">{place.what}</td>
+                <td class="px-4 py-4 leading-7 text-stone">{place.use}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-8 rounded-2xl border border-brick-200 bg-brick-50 p-5">
+      <p class="text-sm font-extrabold text-brick-700">If you only remember one thing</p>
+      <p class="mt-2 text-sm leading-7 text-brick-700/90">
+        The monument is on County Road 49 and free to visit. The rail bike boards at Longteng Station
+        or in the Shengxing Station area, and needs a booking. Navigating to "Longteng Bridge" when you
+        are booked from Longteng Station — or the reverse — will send you to the wrong car park.
+      </p>
+    </div>
+  </section>
+
+  <section id="booking" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Before you book</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Four things to settle first
+    </h2>
+
+    <ol class="mt-9 grid gap-3 sm:grid-cols-2">
+      {
+        beforeYouBook.map((item, index) => (
+          <li class="flex gap-4 rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-8 shrink-0 items-center justify-center rounded-full bg-brick-100 text-xs font-black text-brick-700">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>
+              <strong class="block font-extrabold text-ink">{item.title}</strong>
+              <span class="mt-2 block text-sm leading-7 text-stone">{item.text}</span>
+            </span>
+          </li>
+        ))
+      }
+    </ol>
+
+    <div class="mt-8 flex flex-col gap-3 rounded-2xl border border-black/8 bg-white/72 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <p class="text-sm leading-7 text-stone">
+        Not sure how the stations fit together, or how to reach them with or without a car?
+      </p>
+      <div class="flex shrink-0 flex-wrap gap-x-5 gap-y-2">
+        <a
+          href="/en/transportation/"
+          class="inline-flex items-center gap-2 text-sm font-black text-brick-700"
+        >
+          Directions, parking and station choices
+          <Icon name="arrow" size={16} />
+        </a>
+        <a
+          href="/en/itinerary/"
+          class="inline-flex items-center gap-2 text-sm font-black text-brick-700"
+        >
+          Fit it into a day trip
+          <Icon name="arrow" size={16} />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section id="weather" class="section-shell mt-16 scroll-mt-24">
+    <div class="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <span class="eyebrow">Weather</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          Rain, wind and suspension
+        </h2>
+        <p class="mt-5 text-sm leading-8 text-stone">
+          The rail bike is an outdoor service on a mountain alignment, so the weather is felt more
+          strongly than in the towns below. Whether it runs is the operator's call on the day, based on
+          the conditions and route safety — this guide does not print a fixed suspension rule.
+        </p>
+
+        <ul class="mt-7 grid gap-2.5 text-sm leading-7 text-stone">
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Check the operator's daily notice and a contact number before you travel, rather than judging from the forecast alone.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Thunderstorms, strong wind and heavy-rain warnings are the conditions most likely to change a departure.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Even on a running service, a rain jacket is more useful than an umbrella on an open vehicle; protect valuables and pack a spare layer.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Cancellations are usually handled by rebooking or refund, but the exact rules are the operator's — read them at booking time.</span>
+          </li>
+        </ul>
+
+        <div class="mt-7 flex flex-wrap gap-3 text-sm">
+          <a
+            href="/en/itinerary/"
+            class="inline-flex items-center gap-2 rounded-full border border-black/8 bg-white px-4 py-2.5 font-bold text-ink transition hover:border-brick-200"
+          >
+            <Icon name="compass" size={16} />
+            Fit a departure into a day trip
+          </a>
+          <a
+            href="/en/"
+            class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 font-bold text-white transition hover:bg-forest-600"
+          >
+            <Icon name="book" size={16} />
+            Back to the visitor guide
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <GoogleMap
+          lang="en"
+          title="Old Mountain Line Rail Bike at Longteng Station on Google Maps"
+          query="舊山線鐵道自行車 龍騰站"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section id="faq" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">FAQ</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Common questions
+    </h2>
+
+    <div class="mt-9 grid max-w-3xl gap-3">
+      {
+        faqs.map((item) => (
+          <details class="group rounded-2xl border border-black/8 bg-white/72 px-5 py-4">
+            <summary class="cursor-pointer list-none font-extrabold text-ink marker:content-none">
+              <span class="flex items-start justify-between gap-4">
+                {item.q}
+                <Icon
+                  name="chevron"
+                  size={17}
+                  class="mt-1 shrink-0 text-brick-600 transition group-open:rotate-90"
+                />
+              </span>
+            </summary>
+            <p class="mt-3 text-sm leading-8 text-stone">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+
+    <div class="mt-10 rounded-[1.75rem] border border-black/8 bg-white/72 p-6 sm:p-8">
+      <span class="eyebrow">Official sources</span>
+      <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+        Route contents, fares, timetables and safety rules are published by the operating body and can
+        change. Confirm them directly before you book — that is why this page explains how to decide
+        instead of printing numbers that go stale.
+      </p>
+      <ul class="mt-6 grid gap-2.5 sm:grid-cols-2">
+        {
+          OFFICIAL_SOURCES.map((source) => (
+            <li>
+              <a
+                href={source.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex items-start gap-3 rounded-xl border border-black/8 bg-white px-4 py-3 text-sm font-bold text-ink transition hover:border-brick-200"
+              >
+                <Icon name="check" size={16} class="mt-0.5 shrink-0 text-forest-600" />
+                <span>{source.nameEn}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/en/transportation/"
+          class="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:border-brick-300"
+        >
+          <Icon name="train" size={16} />
+          Getting there
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

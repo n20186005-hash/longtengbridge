@@ -1,0 +1,705 @@
+---
+import { Image } from "astro:assets";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Icon from "../../components/Icon.astro";
+import GoogleMap from "../../components/GoogleMap.astro";
+import hero from "../../assets/longteng-hero.jpg";
+import { ATTRACTION, OFFICIAL_SOURCES } from "../../data/attraction";
+import { SITE } from "../../data/site";
+
+const PAGE_URL = `${SITE.url}/en/`;
+
+/** 現場可觀察的四個重點 */
+const onSite = [
+  {
+    icon: "camera" as const,
+    title: "The direction of the break",
+    text: "The arches were not crushed — they were pulled apart at the joints when the piers shifted. Look at where the brickwork stops and you are reading the mechanics of the 1935 earthquake.",
+  },
+  {
+    icon: "shield" as const,
+    title: "Two construction periods in one pier",
+    text: "Original brickwork sits next to later consolidation work. The monument has been stabilised more than once, most visibly after the 1999 Chi-Chi earthquake.",
+  },
+  {
+    icon: "rail" as const,
+    title: "The steel bridge behind",
+    text: "The girder bridge further back is the Yutengping Iron Bridge, completed in 1938. It replaced the brick bridge for rail traffic on a new alignment to the west.",
+  },
+  {
+    icon: "leaf" as const,
+    title: "The valley below",
+    text: "The bridge once crossed the Yutengping creek in the catchment of Liyutan Reservoir. The water level reacts to rain upstream within minutes, not to the rain you feel.",
+  },
+];
+
+/** 三座容易混淆的橋／站 */
+const comparison = [
+  {
+    name: "Yutengping Broken Bridge",
+    aliases: "魚藤坪斷橋・Longteng Bridge・龍騰斷橋",
+    year: "1907, severed in 1935",
+    material: "Red-brick arches and piers",
+    role: "Miaoli County monument, outdoor and free to visit",
+  },
+  {
+    name: "Yutengping Iron Bridge",
+    aliases: "魚藤坪鐵橋",
+    year: "Completed 1938",
+    material: "Steel girders on concrete piers",
+    role: "Post-earthquake replacement, now part of the rail bike route",
+  },
+  {
+    name: "Shengxing Station",
+    aliases: "勝興車站",
+    year: "Old Mountain Line era",
+    material: "Timber station building at about 402 m",
+    role: "Highest station on the old line, old street, rail bike stop",
+  },
+];
+
+/** 鐵道自行車三條路線的決策差異 */
+const routes = [
+  {
+    name: "Route A",
+    focus: "Yutengping Iron Bridge, a distant view of the north section, and the south section remains",
+    pick: "You want to understand how the two surviving ends relate to the valley",
+    from: "Shengxing Station area",
+  },
+  {
+    name: "Route B",
+    focus: "Longteng Station, No. 2 tunnel, Shengxing Station and the old street",
+    pick: "The old street and the station matter more to you than the bridges",
+    from: "Longteng Station",
+  },
+  {
+    name: "Route C",
+    focus: "The Yutengping Iron Bridge and the tunnel group",
+    pick: "You are here for engineering, tunnels and valley scenery",
+    from: "Longteng Station",
+  },
+];
+
+const faqs = [
+  {
+    q: "Is Longteng Bridge the same as Yutengping Broken Bridge?",
+    a: "Yes. Yutengping Broken Bridge (魚藤坪斷橋) is the official heritage name; Longteng Bridge is the name most travellers use, and the railway called it Yutengping Bridge when it opened in 1907. The steel bridge behind it, Yutengping Iron Bridge, is a different structure built in 1938.",
+  },
+  {
+    q: "Why did the bridge break?",
+    a: "It was severed by the 1935 earthquake centred around Sanyi and Kandaoshan, one of the most destructive earthquakes in modern Taiwanese history. Brick arches carry load by compression, so when the piers were displaced the arches were torn open at the joints. The 1999 Chi-Chi earthquake caused further damage to what remained.",
+  },
+  {
+    q: "Can I walk across the bridge?",
+    a: "No. The monument is fenced and protected, and the brickwork is unstable. You visit from the designated viewing areas beside the road and from the rail bike route. Climbing the piers or the arches is both a safety risk and a heritage protection issue.",
+  },
+  {
+    q: "Do I need to book or buy a ticket?",
+    a: "The outdoor monument has no ticket and no fixed admission time — it can be visited during daylight. The Old Mountain Line rail bike is a separate, ticketed service that requires booking, and fares, schedules and booking rules change over time, so this site links to the operator instead of publishing numbers that go stale.",
+  },
+  {
+    q: "Is it still worth visiting without the rail bike?",
+    a: "Yes. The main viewing area gives you the red-brick arches, the break itself and the steel replacement bridge in one view, and that is the core of the site. The rail bike adds tunnels, the iron bridge and the south section — it is an extra layer, not a requirement.",
+  },
+  {
+    q: "How do I get there without a car?",
+    a: "Take the Taiwan Railways Administration to Sanyi Station, then continue by taxi, pre-arranged transfer or local bus. Mountain services are infrequent and change, so plan the return leg as well as the outbound one. Driving is the most flexible option if you want to combine the monument, Shengxing Station and the old street.",
+  },
+];
+
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": `${PAGE_URL}#faq`,
+  inLanguage: "en",
+  mainEntity: faqs.map((item) => ({
+    "@type": "Question",
+    name: item.q,
+    acceptedAnswer: { "@type": "Answer", text: item.a },
+  })),
+};
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": `${PAGE_URL}#webpage`,
+  url: PAGE_URL,
+  name: "Longteng Bridge Visitor Guide",
+  inLanguage: "en",
+  about: { "@id": `${SITE.url}/#attraction` },
+  isPartOf: { "@id": `${SITE.url}/#website` },
+  significantLink: [`${SITE.url}/en/transportation/`, `${SITE.url}/en/rail-bike/`],
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "English guide",
+      item: PAGE_URL,
+    },
+  ],
+};
+
+const anchors = [
+  { label: "What you are looking at", href: "#what" },
+  { label: "Three bridges, not one", href: "#compare" },
+  { label: "Tickets and opening times", href: "#tickets" },
+  { label: "Best time to visit", href: "#when" },
+  { label: "Rail bike routes", href: "#railbike" },
+  { label: "Common questions", href: "#faq" },
+];
+---
+
+<BaseLayout
+  lang="en"
+  title="Longteng Bridge Visitor Guide｜Remains of Longteng Bridge, Sanyi, Miaoli"
+  description="A 1907 red-brick railway bridge in Sanyi, Miaoli, severed by the 1935 earthquake. What survives, how long to stay, tickets, best time and the Old Mountain Line rail bike."
+  imageAlt="Red-brick arches of the Remains of Longteng Bridge in Sanyi, Miaoli, Taiwan"
+  schema={[pageSchema, faqSchema, breadcrumbSchema]}
+>
+  <header class="section-shell pt-10 sm:pt-16">
+    <nav class="mb-7 flex items-center gap-2 text-xs font-bold text-stone" aria-label="Breadcrumb">
+      <a href="/en/" class="hover:text-brick-700">English guide</a>
+      <Icon name="chevron" size={13} />
+      <span aria-current="page">Visitor guide</span>
+    </nav>
+
+    <div class="grid items-end gap-8 lg:grid-cols-[1.08fr_0.92fr]">
+      <div class="pb-2">
+        <span class="eyebrow">English visitor guide</span>
+        <h1
+          class="editorial-title mt-5 max-w-4xl text-[clamp(2.4rem,6vw,4.8rem)] font-bold leading-[1] text-ink"
+        >
+          The Remains of
+          <br />
+          Longteng Bridge
+        </h1>
+        <p class="mt-6 max-w-2xl text-base leading-8 text-stone sm:text-lg">
+          Most visitors arrive with the wrong mental picture. This is not a bridge you walk across —
+          it is what is left of one: red-brick piers and broken arches standing in a narrow valley in
+          Sanyi, severed by an earthquake in 1935 and left that way ever since.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3 text-xs font-bold">
+          <span class="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-stone shadow-sm">
+            <Icon name="clock" size={15} />
+            6 minute read
+          </span>
+          <a
+            href="#what"
+            class="inline-flex items-center gap-2 rounded-full bg-brick-100 px-3.5 py-2 text-brick-700"
+          >
+            <Icon name="compass" size={15} />
+            Jump to the essentials
+          </a>
+          <a
+            href={ATTRACTION.mapsShareUrl}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3.5 py-2 text-white"
+          >
+            <Icon name="map" size={15} />
+            Open in Google Maps
+          </a>
+        </div>
+      </div>
+
+      <figure class="overflow-hidden rounded-[1.75rem] bg-forest-50 shadow-soft">
+        <Image
+          src={hero}
+          alt="Red-brick arches of the Remains of Longteng Bridge in Sanyi, Miaoli, Taiwan"
+          widths={[640, 960, 1280]}
+          sizes="(min-width: 1024px) 42vw, 100vw"
+          format="avif"
+          class="aspect-[4/3] h-full w-full object-cover"
+        />
+      </figure>
+    </div>
+
+    <div class="mt-10 grid overflow-hidden rounded-2xl border border-black/8 bg-white/75 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          { label: "Official name", value: "Yutengping Broken Bridge" },
+          { label: "Completed", value: "1907" },
+          { label: "Severed", value: "1935 earthquake" },
+          { label: "Status", value: "Miaoli County monument" },
+        ].map((fact) => (
+          <div class="border-b border-black/8 p-5 last:border-0 sm:border-r lg:border-b-0">
+            <p class="text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+              {fact.label}
+            </p>
+            <p class="mt-2 text-sm font-extrabold leading-6 text-ink">{fact.value}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <ul class="mt-8 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        anchors.map((anchor) => (
+          <li>
+            <a
+              href={anchor.href}
+              class="flex items-center justify-between gap-3 rounded-2xl border border-black/8 bg-white/70 px-4 py-3 text-sm font-bold text-ink transition hover:border-brick-200 hover:bg-white"
+            >
+              {anchor.label}
+              <Icon name="arrow" size={16} class="text-brick-600" />
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </header>
+
+  <section id="what" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">History in three parts</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      What you are actually looking at
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      The valley holds three periods of the same railway at once, which is what makes the site worth
+      more than a photograph.
+    </p>
+
+    <ol class="mt-9 grid gap-3 lg:grid-cols-3">
+      {
+        [
+          {
+            years: "1907–1935",
+            title: "The brick bridge",
+            text: "The Old Mountain Line climbed through the Miaoli hills with bridges and tunnels packed tightly together. Yutengping Bridge crossed this valley on red-brick piers and arches — a practical answer when brick could be made and laid on site without heavy machinery.",
+          },
+          {
+            years: "1935–1998",
+            title: "Broken, then bypassed",
+            text: "The 1935 earthquake cut the bridge. Rather than rebuild the brick structure, engineers built a steel girder bridge on a new alignment to the west and kept the railway running across the valley until the line itself closed in 1998.",
+          },
+          {
+            years: "1998–today",
+            title: "Heritage site",
+            text: "When the Sanyi–Houli section moved to a new route, the Old Mountain Line stopped carrying trains. The remains were listed as a county monument in 2003, and parts of the old line reopened later as a rail bike route.",
+          },
+        ].map((era, index) => (
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-8 items-center justify-center rounded-full bg-brick-100 text-xs font-black text-brick-700">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <p class="mt-5 text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+              {era.years}
+            </p>
+            <h3 class="mt-2 font-extrabold text-ink">{era.title}</h3>
+            <p class="mt-2 text-sm leading-7 text-stone">{era.text}</p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <h3 class="editorial-title mt-14 text-2xl font-bold text-ink">Four things to look for on site</h3>
+    <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+      {
+        onSite.map((item) => (
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-9 items-center justify-center rounded-full bg-forest-100 text-forest-700">
+              <Icon name={item.icon} size={18} />
+            </span>
+            <h4 class="mt-4 font-extrabold text-ink">{item.title}</h4>
+            <p class="mt-2 text-sm leading-7 text-stone">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section id="compare" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Naming</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Three bridges, not one
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      Almost every confusion about this place comes from two similar names in one valley. Here is
+      the difference in one table.
+    </p>
+
+    <div class="mt-9 overflow-x-auto">
+      <table class="w-full min-w-[46rem] border-collapse text-sm">
+        <thead>
+          <tr class="border-b border-black/10 text-left">
+            <th class="px-4 py-3 font-black text-ink">Name</th>
+            <th class="px-4 py-3 font-black text-ink">Date</th>
+            <th class="px-4 py-3 font-black text-ink">Structure</th>
+            <th class="px-4 py-3 font-black text-ink">Today</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            comparison.map((row) => (
+              <tr class="border-b border-black/8 align-top">
+                <td class="px-4 py-4">
+                  <strong class="block font-extrabold text-ink">{row.name}</strong>
+                  <span class="mt-1 block text-xs leading-6 text-stone">{row.aliases}</span>
+                </td>
+                <td class="px-4 py-4 leading-7 text-stone">{row.year}</td>
+                <td class="px-4 py-4 leading-7 text-stone">{row.material}</td>
+                <td class="px-4 py-4 leading-7 text-stone">{row.role}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      The short version: the <strong class="font-extrabold text-ink">broken bridge</strong> is the
+      monument you came for, the <strong class="font-extrabold text-ink">iron bridge</strong> behind it
+      is the 1938 replacement, and <strong class="font-extrabold text-ink">Shengxing Station</strong> is
+      a stop further along the old line.
+    </p>
+  </section>
+
+  <section id="tickets" class="section-shell mt-16 scroll-mt-24">
+    <div class="grid gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+      <div>
+        <span class="eyebrow">Practicalities</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          Tickets, hours and how long to stay
+        </h2>
+        <ul class="mt-7 grid gap-4 text-sm leading-7 text-stone">
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">The monument itself is free and outdoors.</strong>
+            There is no ticket and no fixed admission time. It is a roadside heritage site that you can
+            visit during daylight, and it does not close in the way a museum does.
+          </li>
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">The rail bike is a separate, ticketed service.</strong>
+            It needs a booking, runs to its own timetable, and has age, height and safety rules. Fares and
+            timetables change, so this guide deliberately does not print them.
+          </li>
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">Allow 30 to 60 minutes for the main area.</strong>
+            That covers the viewing area, the arches and the steel bridge in one view. Add a half day if you
+            combine it with Shengxing Station and the rail bike.
+          </li>
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">Weather changes the plan, not the opening.</strong>
+            Rain does not close the site, but the brick steps and paths become slippery and fog can reduce
+            visibility on the mountain roads.
+          </li>
+        </ul>
+      </div>
+
+      <div class="rounded-[1.75rem] border border-black/8 bg-white/72 p-6 sm:p-8">
+        <h3 class="font-extrabold text-ink">Opening the official sources</h3>
+        <p class="mt-3 text-sm leading-7 text-stone">
+          Fares, schedules, booking rules and park opening status are published by the bodies below.
+          Check them directly before you travel — that is the whole point of linking out instead of
+          copying numbers here.
+        </p>
+        <ul class="mt-5 grid gap-2.5">
+          {
+            OFFICIAL_SOURCES.map((source) => (
+              <li>
+                <a
+                  href={source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-start gap-3 rounded-xl border border-black/8 bg-white px-4 py-3 text-sm font-bold text-ink transition hover:border-brick-200"
+                >
+                  <Icon name="check" size={16} class="mt-0.5 shrink-0 text-forest-600" />
+                  <span>{source.nameEn}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-5 text-xs leading-6 text-stone">
+          Most official pages are published in Traditional Chinese. Google Translate handles them well
+          enough for ticket and timetable details.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="when" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Timing</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">Best time to visit</h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      This is a low mountain valley at roughly 300 to 400 metres, about an hour inland from the coast.
+      It is wetter and cooler than the cities on either side, and the weather turns faster than the
+      forecast suggests.
+    </p>
+
+    <ul class="mt-9 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {
+        [
+          {
+            season: "October – November",
+            tone: "best",
+            text: "The dry, clear window. Best light, most comfortable temperatures and the most reliable visibility of the year.",
+          },
+          {
+            season: "December – February",
+            tone: "ok",
+            text: "Damp and misty with low winter sun raking across the brickwork. Cold and wet under the northeast monsoon, but photogenic.",
+          },
+          {
+            season: "March – May",
+            tone: "ok",
+            text: "Fog, tung blossom and the start of the afternoon showers. Beautiful, but bring a rain layer and grippy shoes.",
+          },
+          {
+            season: "June – September",
+            tone: "care",
+            text: "The wettest and hottest stretch: plum rain, typhoons and near-daily afternoon thunderstorms. Go early in the day if you go at all.",
+          },
+        ].map((item) => (
+          <li
+            class:list={[
+              "rounded-2xl border p-5",
+              item.tone === "best" && "border-forest-100 bg-forest-50",
+              item.tone === "ok" && "border-black/8 bg-white/72",
+              item.tone === "care" && "border-brick-200 bg-brick-50",
+            ]}
+          >
+            <p class="font-black text-ink">{item.season}</p>
+            <p class="mt-2 text-sm leading-7 text-stone">{item.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="mt-8 rounded-2xl border border-black/8 bg-white/72 px-5 py-5">
+      <p class="text-sm font-extrabold text-ink">Reading the weather on the day</p>
+      <p class="mt-2 max-w-3xl text-sm leading-7 text-stone">
+        Use the forecast for the day you travel rather than a seasonal average. Morning fog settles in
+        this valley and lifts slowly, so an early start often means mist rather than clear brickwork.
+        Summer afternoons bring thunderstorms more often than not. What actually changes a rail bike
+        departure is a heavy-rain, strong-wind or typhoon warning, and that call belongs to the
+        operator rather than to a forecast.
+      </p>
+    </div>
+  </section>
+
+  <section id="railbike" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">Old Mountain Line rail bike</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Riding the old line
+    </h2>
+    <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+      Parts of the disused mountain line were reopened as a rail bike route, which puts you on the
+      original trackbed through tunnels and across the Yutengping Iron Bridge. It is the only way to
+      see the south section remains and the valley from track level.
+    </p>
+
+    <div class="mt-9 grid gap-3 lg:grid-cols-3">
+      {
+        routes.map((route) => (
+          <div class="flex flex-col rounded-2xl border border-black/8 bg-white/72 p-5">
+            <span class="flex size-9 items-center justify-center rounded-full bg-brick-100 text-brick-700">
+              <Icon name="rail" size={18} />
+            </span>
+            <h3 class="mt-4 font-extrabold text-ink">{route.name}</h3>
+            <p class="mt-2 text-sm leading-7 text-stone">{route.focus}</p>
+            <p class="mt-4 text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+              Choose it if
+            </p>
+            <p class="mt-1.5 text-sm leading-7 text-stone">{route.pick}</p>
+            <p class="mt-4 text-[0.67rem] font-black tracking-[0.14em] text-stone uppercase">
+              Boarding
+            </p>
+            <p class="mt-1.5 text-sm leading-7 text-stone">{route.from}</p>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="mt-8 rounded-2xl border border-brick-200 bg-brick-50 p-5">
+      <p class="text-sm font-extrabold text-brick-700">Before you book</p>
+      <ul class="mt-3 grid gap-2 text-sm leading-7 text-brick-700/90">
+        <li>
+          Boarding points are not interchangeable. Longteng Bridge, Longteng Station and Shengxing
+          Station are three different places, and picking the wrong one on a mountain road costs time.
+        </li>
+        <li>
+          Child age and height rules, pregnancy and mobility restrictions are set by the operator and
+          can change — read the current booking terms rather than an old blog screenshot.
+        </li>
+        <li>
+          Routes are occasionally adjusted for maintenance, and severe weather can suspend service.
+          Check the operator's notice for the day of travel.
+        </li>
+      </ul>
+      <div class="mt-5 flex flex-wrap gap-3">
+        <a
+          href="/en/rail-bike/"
+          class="inline-flex items-center gap-2 rounded-full border border-brick-300 bg-white px-4 py-2.5 text-sm font-bold text-brick-700 transition hover:bg-brick-50"
+        >
+          <Icon name="route" size={16} />
+          Compare the routes in detail
+        </a>
+        <a
+          href={SITE.bookingUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 rounded-full bg-brick-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brick-700"
+        >
+          <Icon name="rail" size={16} />
+          Operator booking information
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell mt-16">
+    <div class="rounded-[1.75rem] border border-black/8 bg-white/72 p-6 sm:p-8">
+      <div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div>
+          <span class="eyebrow">Putting it together</span>
+          <h2 class="editorial-title mt-4 text-2xl font-bold text-ink sm:text-3xl">
+            Plan the whole day, not just the stop
+          </h2>
+          <p class="mt-4 text-sm leading-8 text-stone">
+            The bridge, Shengxing Station and the rail bike belong to one story, and whether you have a
+            booked departure decides the rhythm of the day. Three ready-to-use plans — with and without
+            the rail bike, and one for photography — are laid out step by step.
+          </p>
+        </div>
+        <div class="flex flex-col gap-3">
+          <a
+            href="/en/itinerary/"
+            class="inline-flex items-center justify-center gap-2 rounded-full bg-brick-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-brick-700"
+          >
+            <Icon name="book" size={16} />
+            One-day trip plans
+          </a>
+          <a
+            href="/en/transportation/"
+            class="inline-flex items-center justify-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:border-brick-300"
+          >
+            <Icon name="train" size={16} />
+            Getting there
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-shell mt-16">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div>
+        <span class="eyebrow">Access</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          Steps, strollers and children
+        </h2>
+        <p class="mt-5 text-sm leading-8 text-stone">
+          The area immediately around the main viewpoint is reasonably level and works for a short
+          stop. Everything beyond it — the brick steps down toward the creek, the old line footpaths
+          and the tunnels — involves stairs, loose surfaces and slopes.
+        </p>
+        <ul class="mt-6 grid gap-2.5 text-sm leading-7 text-stone">
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Wheelchairs and strollers can cover the parking area and the nearest viewpoint, not the full site.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Wet brick and stone steps are genuinely slippery. Grip matters more than waterproofing.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>Do not let children climb the piers or arches: the masonry is fragile and the drops are real.</span>
+          </li>
+          <li class="flex gap-3">
+            <Icon name="check" size={15} class="mt-2 shrink-0 text-forest-600" />
+            <span>There is very little shade and few facilities on site. Carry water and use the toilets in town or at the stations.</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <span class="eyebrow">Getting here</span>
+        <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+          Driving and public transport
+        </h2>
+        <p class="mt-5 text-sm leading-8 text-stone">
+          The bridge sits on a narrow mountain road in Sanyi Township. Driving gives you the most
+          flexibility; by train you reach Sanyi Station first and continue uphill by taxi or local bus.
+        </p>
+        <ul class="mt-6 grid gap-3 text-sm leading-7 text-stone">
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">By car</strong>
+            National Freeway 1 to the Sanyi Interchange, then County Road 49 into the hills. The road
+            winds, and passing space is limited in places.
+          </li>
+          <li class="rounded-2xl border border-black/8 bg-white/72 p-5">
+            <strong class="block font-extrabold text-ink">By train</strong>
+            Taiwan Railways to Sanyi Station, then taxi, pre-booked transfer or local bus. Mountain
+            services are sparse, so fix your return leg before you go up.
+          </li>
+        </ul>
+        <a
+          href="/en/transportation/"
+          class="mt-5 inline-flex items-center gap-2 text-sm font-black text-brick-700"
+        >
+          Full directions, parking and station choices
+          <Icon name="arrow" size={16} />
+        </a>
+      </div>
+    </div>
+
+    <div class="mt-10">
+      <GoogleMap
+        lang="en"
+        title="Remains of Longteng Bridge on Google Maps"
+        query="龍騰斷橋 苗栗縣三義鄉"
+      />
+    </div>
+  </section>
+
+  <section id="faq" class="section-shell mt-16 scroll-mt-24">
+    <span class="eyebrow">FAQ</span>
+    <h2 class="editorial-title mt-4 text-3xl font-bold text-ink sm:text-4xl">
+      Common questions
+    </h2>
+
+    <div class="mt-9 grid max-w-3xl gap-3">
+      {
+        faqs.map((item) => (
+          <details class="group rounded-2xl border border-black/8 bg-white/72 px-5 py-4">
+            <summary class="cursor-pointer list-none font-extrabold text-ink marker:content-none">
+              <span class="flex items-start justify-between gap-4">
+                {item.q}
+                <Icon
+                  name="chevron"
+                  size={17}
+                  class="mt-1 shrink-0 text-brick-600 transition group-open:rotate-90"
+                />
+              </span>
+            </summary>
+            <p class="mt-3 text-sm leading-8 text-stone">{item.a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section-shell py-16 sm:py-20">
+    <div class="rounded-[1.75rem] border border-black/8 bg-white/72 p-6 sm:p-8">
+      <span class="eyebrow">Sources &amp; editorial policy</span>
+      <p class="mt-5 max-w-3xl text-sm leading-8 text-stone">
+        Historical details, the heritage name and the geographic relationship of the three structures
+        follow the National Cultural Heritage Database, the Miaoli tourism authority and the Taiwan
+        Tourism Administration. Fares, timetables, opening status and road conditions are volatile, so
+        they are not published as fixed numbers here — this guide explains how to decide and links to
+        whoever actually operates the service.
+      </p>
+      <p class="mt-4 max-w-3xl text-sm leading-8 text-stone">
+        This is not an official website. It is an independent guide, and it is maintained as separate
+        English and Traditional Chinese versions rather than as one bilingual page — use the language
+        switch at the top of any page to move between them.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

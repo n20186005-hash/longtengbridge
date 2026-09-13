@@ -1,0 +1,233 @@
+---
+import Icon from "./Icon.astro";
+import {
+  MONTH_CLIMATE,
+  SEASONS,
+  WATER_QUALITY_NOTES,
+  WEATHER_RISK_NOTES,
+  WILDLIFE_CALENDAR,
+} from "../data/climate";
+
+const currentMonth = Number(
+  new Intl.DateTimeFormat("en-US", { month: "numeric", timeZone: "Asia/Taipei" }).format(new Date()),
+);
+
+const rainTone: Record<string, string> = {
+  偏少: "bg-forest-100",
+  中等: "bg-forest-300",
+  偏多: "bg-brick-200",
+  最多: "bg-brick-400",
+};
+
+const rainHeight: Record<string, string> = {
+  偏少: "h-1.5",
+  中等: "h-3",
+  偏多: "h-4.5",
+  最多: "h-6",
+};
+
+const cautionMonths = WILDLIFE_CALENDAR.filter((entry) => entry.caution);
+---
+
+<section class="section-shell pt-20 sm:pt-28" aria-labelledby="seasonal-heading">
+  <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <div class="max-w-2xl">
+      <p class="text-xs font-black tracking-[0.2em] text-brick-700 uppercase">
+        四季怎麼來
+      </p>
+      <h2
+        id="seasonal-heading"
+        class="editorial-title mt-4 text-3xl font-bold leading-tight text-ink sm:text-4xl"
+      >
+        季節決定你看到什麼，<br />也決定你要帶什麼
+      </h2>
+      <p class="mt-5 text-sm leading-7 text-stone sm:text-base">
+        龍騰斷橋位在海拔約 300–400 公尺的淺山，氣候比苗栗平地略涼、濕度更高，
+        濃霧、午後雷陣雨與東北季風是全年三個主要變數。以下整理各月常年概況與對應的遊覽策略，
+        用來決定季節、裝備與備案，而不是取代出發當天的即時預報。
+      </p>
+    </div>
+    <a
+      href="/seasonal-guide/"
+      class="inline-flex shrink-0 items-center gap-2 rounded-full border border-black/10 px-5 py-3 text-sm font-black text-ink transition hover:border-forest-600 hover:text-forest-700"
+    >
+      <Icon name="calendar" size={17} />
+      完整四季攻略
+    </a>
+  </div>
+
+  <div class="mt-10 overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-soft">
+    <div class="flex items-center justify-between gap-4 border-b border-black/8 px-6 py-5 sm:px-8">
+      <div>
+        <p class="text-xs font-black tracking-[0.14em] text-stone uppercase">月均概況</p>
+        <h3 class="editorial-title mt-2 text-xl font-bold text-ink sm:text-2xl">
+          一年 12 個月的溫度與雨量節奏
+        </h3>
+      </div>
+      <p class="hidden text-right text-xs leading-6 text-stone sm:block">
+        數值為區域常年平均概值<br />實際天氣請看即時預報
+      </p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 p-6 sm:grid-cols-4 sm:p-8 lg:grid-cols-12">
+      {
+        MONTH_CLIMATE.map((month) => (
+          <div
+            class:list={[
+              "rounded-2xl border p-3 text-center transition",
+              month.month === currentMonth
+                ? "border-forest-600 bg-forest-50"
+                : "border-black/8 bg-cream/60",
+            ]}
+          >
+            <p class="text-[0.68rem] font-black tracking-[0.08em] text-stone">
+              {month.month} 月
+            </p>
+            <p class="mt-2 text-sm font-black text-ink">{month.high}°</p>
+            <p class="text-[0.68rem] font-bold text-stone">{month.low}°</p>
+            <span
+              class:list={["mx-auto mt-3 block w-5 rounded-full", rainHeight[month.rainLevel], rainTone[month.rainLevel]]}
+              aria-hidden="true"
+            ></span>
+            <p class="mt-2 text-[0.62rem] font-bold text-stone">{month.rainLevel}</p>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <div class="mt-6 grid gap-4 lg:grid-cols-2">
+    {
+      SEASONS.map((season) => (
+        <article class="flex flex-col rounded-[1.75rem] border border-black/8 bg-white p-6 shadow-soft sm:p-7">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h3 class="editorial-title text-xl font-bold text-ink">{season.name}</h3>
+              <p class="mt-1 text-xs font-black tracking-[0.1em] text-stone uppercase">
+                {season.months}
+              </p>
+            </div>
+            <span class="rounded-full bg-forest-50 px-3 py-1.5 text-[0.68rem] font-black text-forest-600">
+              {season.bestTime}
+            </span>
+          </div>
+
+          <p class="mt-4 rounded-2xl bg-cream/70 p-4 text-sm leading-7 text-ink">
+            {season.summary}
+          </p>
+
+          <dl class="mt-5 grid gap-4 sm:grid-cols-3">
+            <div>
+              <dt class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.1em] text-stone uppercase">
+                <Icon name="camera" size={14} />
+                看什麼
+              </dt>
+              <dd class="mt-2 space-y-1.5 text-xs leading-6 text-stone">
+                {season.focus.map((item) => <p>{item}</p>)}
+              </dd>
+            </div>
+            <div>
+              <dt class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.1em] text-stone uppercase">
+                <Icon name="shirt" size={14} />
+                帶什麼
+              </dt>
+              <dd class="mt-2 space-y-1.5 text-xs leading-6 text-stone">
+                {season.gear.map((item) => <p>{item}</p>)}
+              </dd>
+            </div>
+            <div>
+              <dt class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.1em] text-brick-700 uppercase">
+                <Icon name="shield" size={14} />
+                防什麼
+              </dt>
+              <dd class="mt-2 space-y-1.5 text-xs leading-6 text-stone">
+                {season.risks.map((item) => <p>{item}</p>)}
+              </dd>
+            </div>
+          </dl>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="mt-6 grid gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+    <div class="rounded-[1.75rem] border border-black/8 bg-forest-700 p-6 text-white sm:p-8">
+      <p class="flex items-center gap-2 text-xs font-black tracking-[0.16em] text-white/55 uppercase">
+        <Icon name="leaf" size={15} />
+        生態日曆
+      </p>
+      <h3 class="editorial-title mt-3 text-xl font-bold sm:text-2xl">什麼季節會遇到誰</h3>
+      <ul class="mt-5 grid gap-2 sm:grid-cols-2">
+        {
+          WILDLIFE_CALENDAR.map((entry) => (
+            <li
+              class:list={[
+                "rounded-2xl border p-4",
+                entry.caution
+                  ? "border-brick-200/40 bg-brick-400/12"
+                  : "border-white/10 bg-white/6",
+              ]}
+            >
+              <p class="text-[0.68rem] font-black tracking-[0.1em] text-white/55 uppercase">
+                {entry.months}
+              </p>
+              <p class="mt-1.5 text-sm font-black">{entry.title}</p>
+              <p class="mt-2 text-xs leading-6 text-white/70">{entry.detail}</p>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-5 text-xs leading-6 text-white/55">
+        觀察生態請保持距離、不餵食、不捕捉、不使用閃光燈；標示為提醒的月份屬於季節性風險較高的時段。
+      </p>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <div class="rounded-[1.75rem] border border-black/8 bg-white p-6 shadow-soft sm:p-7">
+        <p class="flex items-center gap-2 text-xs font-black tracking-[0.14em] text-stone uppercase">
+          <Icon name="droplet" size={15} />
+          水質與溪流
+        </p>
+        <h3 class="editorial-title mt-3 text-xl font-bold text-ink">魚藤坪溪的水，不是遊憩水域</h3>
+        <ul class="mt-4 space-y-2.5 text-xs leading-6 text-stone">
+          {
+            WATER_QUALITY_NOTES.map((note) => (
+              <li class="flex gap-2">
+                <span class="mt-2 size-1.5 shrink-0 rounded-full bg-forest-300" />
+                <span>{note}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="rounded-[1.75rem] border border-brick-100 bg-brick-50 p-6 sm:p-7">
+        <p class="flex items-center gap-2 text-xs font-black tracking-[0.14em] text-brick-700 uppercase">
+          <Icon name="info" size={15} />
+          需要提高警覺的月份
+        </p>
+        <ul class="mt-4 space-y-2 text-xs leading-6 text-brick-700">
+          {
+            cautionMonths.map((entry) => (
+              <li class="flex gap-2">
+                <span class="font-black">{entry.months}</span>
+                <span class="opacity-80">{entry.title}</span>
+              </li>
+            ))
+          }
+        </ul>
+        <details class="mt-4 rounded-2xl bg-white/70 px-4 py-3">
+          <summary class="cursor-pointer text-xs font-black text-brick-700 marker:content-none">
+            季節性氣象風險
+          </summary>
+          <ul class="mt-3 space-y-2 text-xs leading-6 text-brick-700/85">
+            {WEATHER_RISK_NOTES.map((note) => <li>{note}</li>)}
+          </ul>
+        </details>
+        <p class="mt-4 text-xs leading-6 text-brick-700/80">
+          出發前請確認警特報；遇颱風、豪雨或道路管制，山區步道與鐵道自行車多半停止開放。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

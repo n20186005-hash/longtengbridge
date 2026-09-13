@@ -1,0 +1,174 @@
+---
+import Icon from "./Icon.astro";
+import { ATTRACTION, AUTHORITY_LINKS } from "../data/attraction";
+
+const [landmark1, landmark2] = ATTRACTION.nearbyLandmarks;
+---
+
+<section
+  class="section-shell py-16 sm:py-20"
+  aria-labelledby="entity-about-heading"
+>
+  <!-- 4.2 地理麵包屑與歸屬層級 -->
+  <nav
+    class="flex flex-wrap items-center gap-2 text-xs font-bold text-stone"
+    aria-label="景點地理歸屬"
+  >
+    {
+      ATTRACTION.breadcrumb.map((item, index) => (
+        <>
+          {index > 0 && <Icon name="chevron" size={13} />}
+          <span class={index === ATTRACTION.breadcrumb.length - 1 ? "text-brick-700" : ""}>{item}</span>
+        </>
+      ))
+    }
+  </nav>
+
+  <div class="mt-8 grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="lg:sticky lg:top-24 lg:self-start">
+      <span class="eyebrow">景點實體資訊</span>
+      <h2
+        id="entity-about-heading"
+        class="editorial-title mt-5 text-3xl font-bold leading-tight text-ink sm:text-4xl"
+      >
+        認識龍騰斷橋（魚藤坪斷橋）
+      </h2>
+      <p class="mt-5 text-sm leading-8 text-stone">
+        這裡位於<strong class="text-ink">臺灣苗栗縣三義鄉</strong>，是舊山線鐵道最具辨識度的紅磚橋體遺跡，也是旅人進入三義與舊山線行程的主要入口。官方全稱為「魚藤坪斷橋」，旅遊與地圖上通用的名稱則是「龍騰斷橋」。
+      </p>
+    </div>
+
+    <div class="grid gap-4">
+      <!-- Location & How to Visit -->
+      <article class="rounded-2xl border border-black/8 bg-white/70 p-5 shadow-sm sm:p-6">
+        <h2
+          class="editorial-title text-2xl font-bold text-ink sm:text-[1.7rem]"
+        >
+          位置、導航與參觀方式
+        </h2>
+        <p class="mt-3 text-sm leading-7 text-stone">
+          開車導航可直接搜尋「龍騰斷橋」或使用下方座標；若已預約鐵道自行車，請改依訂單上的取票站（龍騰站或勝興站）導航，兩者不是同一個報到位置。
+        </p>
+        <dl class="mt-5 grid gap-3 sm:grid-cols-2">
+          <div class="rounded-xl bg-cream/70 p-3.5">
+            <dt class="text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">地址</dt>
+            <dd class="mt-1 text-sm font-extrabold leading-6 text-ink">
+              {ATTRACTION.postalCode} {ATTRACTION.cityZh}{ATTRACTION.streetAddress}<br />
+              <span class="font-bold text-stone">{ATTRACTION.stateZh}, {ATTRACTION.countryZh}</span>
+            </dd>
+          </div>
+          <div class="rounded-xl bg-cream/70 p-3.5">
+            <dt class="text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">座標</dt>
+            <dd class="mt-1 text-sm font-extrabold leading-6 text-ink">
+              {ATTRACTION.latitude}, {ATTRACTION.longitude}
+            </dd>
+          </div>
+          <div class="rounded-xl bg-cream/70 p-3.5">
+            <dt class="text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">Plus Code 定位碼</dt>
+            <dd class="mt-1 text-sm font-extrabold leading-6 text-ink">{ATTRACTION.plusCode}</dd>
+          </div>
+          <div class="rounded-xl bg-cream/70 p-3.5">
+            <dt class="text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">電話</dt>
+            <dd class="mt-1 text-sm font-extrabold leading-6 text-ink">
+              <a href={`tel:${ATTRACTION.telephone}`} class="hover:text-brick-700">
+                {ATTRACTION.telephoneDisplay}
+              </a>
+            </dd>
+          </div>
+        </dl>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a
+            href={ATTRACTION.mapsShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600"
+          >
+            <Icon name="map" size={17} />
+            在 Google 地圖開啟
+          </a>
+          <a
+            href="/transportation/"
+            class="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:border-brick-500"
+          >
+            交通與停車攻略
+            <Icon name="arrow" size={16} />
+          </a>
+        </div>
+      </article>
+
+      <!-- Landmarks & Attractions Around -->
+      <article class="rounded-2xl border border-black/8 bg-white/70 p-5 shadow-sm sm:p-6">
+        <h2 class="editorial-title text-2xl font-bold text-ink sm:text-[1.7rem]">
+          周邊的地標與景點
+        </h2>
+        <p class="mt-3 text-sm leading-7 text-stone">
+          造訪<strong class="text-ink">{ATTRACTION.shortNameZh}</strong>時，可輕鬆串連周邊的歷史地標與景點，包括<strong class="text-ink">{landmark1.name}</strong>與<strong class="text-ink">{landmark2.name}</strong>，形成一條完整的舊山線路線。
+        </p>
+        <ul class="mt-5 grid gap-2 sm:grid-cols-2">
+          {
+            ATTRACTION.nearbyLandmarks.map((landmark) => (
+              <li>
+                <a
+                  href={landmark.href}
+                  class="group flex items-center justify-between gap-3 rounded-xl border border-black/8 bg-cream/60 px-4 py-3 text-sm font-bold text-ink transition hover:bg-white hover:shadow-sm"
+                >
+                  <span>
+                    {landmark.name}
+                  </span>
+                  <span class="text-brick-600 transition group-hover:translate-x-1">
+                    <Icon name="chevron" size={16} />
+                  </span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </article>
+
+      <!-- History & Significance -->
+      <article class="rounded-2xl border border-black/8 bg-white/70 p-5 shadow-sm sm:p-6">
+        <h2 class="editorial-title text-2xl font-bold text-ink sm:text-[1.7rem]">
+          斷橋的歷史與價值
+        </h2>
+        <p class="mt-3 text-sm leading-7 text-stone">
+          原橋於 1907 年完工，1935 年關刀山大地震重創橋體，留下今日所見的紅磚殘柱；1938
+          年西側另建的魚藤坪鐵橋成為替代路線，1999 年九二一地震再次於遺構留下痕跡，2003
+          年正式公告為縣定古蹟。
+        </p>
+        <p class="mt-3 text-xs leading-6 text-stone">
+          <strong class="text-ink">官方資料：</strong>
+          文化資產名稱、年代與指定歷程以國家文化資產網公告為準。
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a
+            href="/history/"
+            class="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-ink transition hover:border-brick-500"
+          >
+            閱讀完整歷史
+            <Icon name="arrow" size={16} />
+          </a>
+        </div>
+      </article>
+
+      <!-- 5. 權威外鏈 -->
+      <p class="rounded-2xl border border-forest-100 bg-forest-50 p-5 text-sm leading-7 text-forest-700">
+        如需官方最新公告與區域觀光資訊，請前往
+        {
+          AUTHORITY_LINKS.map((link, index) => (
+            <>
+              {index > 0 && <span aria-hidden="true">、</span>}
+              <a
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-black underline decoration-forest-100 underline-offset-4 hover:text-forest-600"
+              >
+                {link.label}
+              </a>
+            </>
+          ))
+        }。
+      </p>
+    </div>
+  </div>
+</section>

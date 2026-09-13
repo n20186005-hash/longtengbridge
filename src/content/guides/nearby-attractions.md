@@ -6,7 +6,7 @@ slug: "nearby-attractions"
 eyebrow: "周邊景點"
 intro: "離龍騰斷橋最近、主題也最連貫的是勝興車站與舊山線；若還有半天，再往三義木雕街區延伸。火炎山與更遠景點適合獨立安排，不必全部塞進同一天。"
 readTime: "約 6 分鐘讀完"
-image: "shengxing"
+image: "woodcarving"
 facts:
   - label: "最順遊"
     value: "勝興車站"

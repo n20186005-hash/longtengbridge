@@ -1,0 +1,223 @@
+---
+import Icon from "./Icon.astro";
+
+interface RouteStep {
+  time: string;
+  title: string;
+  detail: string;
+}
+
+interface RoutePlan {
+  key: string;
+  name: string;
+  duration: string;
+  bestFor: string;
+  icon: "clock" | "route";
+  tone: string;
+  steps: RouteStep[];
+  note: string;
+  link: { label: string; href: string };
+}
+
+const routes: RoutePlan[] = [
+  {
+    key: "half",
+    name: "半日精華",
+    duration: "約 3–4 小時",
+    bestFor: "過境旅客、帶小孩的家庭、行程中順道一遊",
+    icon: "clock",
+    tone: "border-black/8 bg-white",
+    steps: [
+      {
+        time: "09:00",
+        title: "抵達停車區、整裝",
+        detail: "先上洗手間、補水。假日建議上午十點前抵達，避開滿位後的交通引導。",
+      },
+      {
+        time: "09:15",
+        title: "北段主要遺構區",
+        detail: "紅磚拱圈、斷面與解說牌是半日的核心，這裡就能完整理解「橋為什麼斷在這」。",
+      },
+      {
+        time: "10:15",
+        title: "魚藤坪鐵橋方向",
+        detail: "以短程步行取得與鐵橋同框的視角，不必走完整段舊山線。",
+      },
+      {
+        time: "10:45",
+        title: "舊山線沿線散步",
+        detail: "沿既有動線走一段軌道與隧道口，感受這條路線的坡度與山勢。",
+      },
+      {
+        time: "11:30",
+        title: "勝興老街用餐、勝興車站",
+        detail: "避開 12:00–13:30 的尖峰，餐後在月台與站房一帶散步。",
+      },
+      { time: "13:00", title: "返程", detail: "午後雷陣雨多在下午生成，提早下山最從容。" },
+    ],
+    note: "若改成搭鐵道自行車，時間要反過來排：先依取票站與報到時間為準，再回推斷橋的停留長度。",
+    link: { label: "半日與一日行程細節", href: "/one-day-trip/" },
+  },
+  {
+    key: "full",
+    name: "全日經典",
+    duration: "約 6–8 小時",
+    bestFor: "專程前來、想把舊山線一次走完的旅客",
+    icon: "route",
+    tone: "border-forest-100 bg-forest-50",
+    steps: [
+      {
+        time: "08:30",
+        title: "三義市區補給",
+        detail: "加油或充電、買水與輕食。山區沒有補給點，這一站不能省。",
+      },
+      {
+        time: "09:00",
+        title: "龍騰斷橋遺構區",
+        detail: "光線最柔的時段先拍北段紅磚拱，並讀完主要解說。",
+      },
+      {
+        time: "10:30",
+        title: "舊山線鐵道自行車",
+        detail: "依預約班次與取票站安排，路線內容與營運時間以營運單位公告為準。",
+      },
+      {
+        time: "11:45",
+        title: "勝興老街用餐",
+        detail: "客家合菜或麵食小吃，尖峰時段建議提早 30 分鐘進場。",
+      },
+      {
+        time: "13:00",
+        title: "勝興車站與隧道群",
+        detail: "木造站房、月台與隧道口是舊山線最有味道的一段，適合慢慢走。",
+      },
+      {
+        time: "14:30",
+        title: "三義市區室內備案",
+        detail: "木雕街與文化場館，遇到午後雷陣雨時是最好的替代方案。",
+      },
+      {
+        time: "16:00",
+        title: "周邊二選一",
+        detail: "依體力與天氣從周邊景點中挑一個，不要貪多，寧可留一次再訪的理由。",
+      },
+      {
+        time: "17:30",
+        title: "返程",
+        detail: "冬季天黑得早、山區濃霧多，回程請預留比預期更長的時間。",
+      },
+    ],
+    note: "全日行程務必留 1–2 個彈性時段，用來吸收排隊、天候與交通延誤；排滿反而容易什麼都看不到。",
+    link: { label: "一日遊完整規劃", href: "/one-day-trip/" },
+  },
+];
+---
+
+<section class="section-shell pt-20 sm:pt-28" aria-labelledby="routes-heading">
+  <div class="max-w-2xl">
+    <p class="text-xs font-black tracking-[0.2em] text-brick-700 uppercase">行程骨架</p>
+    <h2
+      id="routes-heading"
+      class="editorial-title mt-4 text-3xl font-bold leading-tight text-ink sm:text-4xl"
+    >
+      半日與全日，<br />兩種通用路線
+    </h2>
+    <p class="mt-5 text-sm leading-7 text-stone sm:text-base">
+      這兩條路線不分族群都能用，差別只在「要不要搭鐵道自行車」與「留幾個彈性時段」。
+      時間為建議值，請依當日交通管制、班次與天候調整。
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-4 lg:grid-cols-2">
+    {
+      routes.map((route) => (
+        <article
+          class:list={[
+            "flex flex-col rounded-[1.75rem] border p-6 shadow-soft sm:p-8",
+            route.tone,
+          ]}
+        >
+          <div class="flex flex-wrap items-start justify-between gap-4">
+            <div class="flex items-center gap-3">
+              <span class="flex size-11 items-center justify-center rounded-2xl bg-white text-forest-700 shadow-sm">
+                <Icon name={route.icon} size={21} />
+              </span>
+              <div>
+                <h3 class="editorial-title text-2xl font-bold text-ink">{route.name}</h3>
+                <p class="mt-0.5 text-xs font-black tracking-[0.1em] text-stone uppercase">
+                  {route.duration}
+                </p>
+              </div>
+            </div>
+            <span class="rounded-full bg-white px-3 py-1.5 text-[0.68rem] font-black text-forest-600 shadow-sm">
+              適合：{route.bestFor}
+            </span>
+          </div>
+
+          <ol class="mt-7 space-y-0">
+            {route.steps.map((step, index) => (
+              <li class="relative flex gap-4 pb-6 last:pb-0">
+                {index < route.steps.length - 1 && (
+                  <span
+                    class="absolute left-[2.35rem] top-9 h-full w-px bg-black/10"
+                    aria-hidden="true"
+                  />
+                )}
+                <span class="relative z-10 mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-white text-[0.66rem] font-black text-forest-700 shadow-sm">
+                  {step.time}
+                </span>
+                <div class="pt-1">
+                  <p class="text-sm font-black text-ink">{step.title}</p>
+                  <p class="mt-1.5 text-xs leading-6 text-stone">{step.detail}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+
+          <p class="mt-6 rounded-2xl bg-white p-4 text-xs leading-6 text-ink shadow-sm">
+            {route.note}
+          </p>
+
+          <a
+            href={route.link.href}
+            class="mt-5 inline-flex items-center gap-2 self-start rounded-full bg-forest-700 px-4 py-2.5 text-xs font-black text-white transition hover:bg-forest-800"
+          >
+            {route.link.label}
+            <Icon name="arrow" size={15} />
+          </a>
+        </article>
+      ))
+    }
+  </div>
+
+  <div class="mt-4 grid gap-4 sm:grid-cols-3">
+    <div class="rounded-[1.5rem] border border-brick-100 bg-brick-50 p-5 sm:p-6">
+      <p class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.12em] text-brick-700 uppercase">
+        <Icon name="umbrella" size={14} />
+        雨天備案
+      </p>
+      <p class="mt-3 text-xs leading-6 text-brick-700">
+        雨勢明顯時改走三義市區的室內場館（木雕、文化展館），並把斷橋與舊山線留到下次；
+        磚階與溪床在雨中非常滑，不值得冒險。
+      </p>
+    </div>
+    <div class="rounded-[1.5rem] border border-black/8 bg-white p-5 shadow-soft sm:p-6">
+      <p class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.12em] text-stone uppercase">
+        <Icon name="car" size={14} />
+        自駕重點
+      </p>
+      <p class="mt-3 text-xs leading-6 text-stone">
+        山區多為單線或窄路，會車不易；請勿違規臨停。午後濃霧時段開霧燈並加大車距。
+      </p>
+    </div>
+    <div class="rounded-[1.5rem] border border-black/8 bg-white p-5 shadow-soft sm:p-6">
+      <p class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.12em] text-stone uppercase">
+        <Icon name="train" size={14} />
+        大眾運輸重點
+      </p>
+      <p class="mt-3 text-xs leading-6 text-stone">
+        以台鐵三義站為轉運點，再轉乘在地公車、台灣好行或計程車；班次有限，務必先確認末班時間。
+      </p>
+    </div>
+  </div>
+</section>

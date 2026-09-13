@@ -4,15 +4,16 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "astro check && astro build && wrangler pages dev --port 8791",
+    "dev": "astro dev",
     "dev:astro": "astro dev",
-    "dev:cloudflare": "astro check && astro build && wrangler pages dev --port 8791",
     "build": "astro check && astro build",
-    "preview": "astro preview",
+    "preview": "astro build && wrangler dev",
     "check": "astro check",
-    "deploy": "pnpm build && wrangler pages deploy"
+    "cf-typegen": "wrangler types",
+    "deploy": "astro check && astro build && wrangler deploy"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^12.6.13",
     "@astrojs/sitemap": "^3.6.0",
     "@tailwindcss/vite": "^4.1.0",
     "astro": "^5.12.0",

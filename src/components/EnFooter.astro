@@ -1,0 +1,101 @@
+---
+import Logo from "./Logo.astro";
+import Icon from "./Icon.astro";
+import { EN_NAV, EN_SITE } from "../data/i18n";
+import { ATTRACTION, GOOGLE_REVIEW, OFFICIAL_SOURCES } from "../data/attraction";
+import { SITE } from "../data/site";
+
+const reviewChecked = new Date(GOOGLE_REVIEW.checkedAt).toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+
+---
+
+<footer class="mt-24 bg-forest-700 text-white">
+  <div class="section-shell grid gap-12 py-16 md:grid-cols-[1.15fr_1fr_1fr]">
+    <div>
+      <Logo light href="/en/" subtitle="English visitor guide" />
+      <p class="mt-6 max-w-sm text-sm leading-7 text-white/68">
+        An independent English guide to the Remains of Longteng Bridge: what survives, why it broke,
+        and how to plan the trip around it.
+      </p>
+      <a
+        href={SITE.mapUrl}
+        target="_blank"
+        rel="noopener"
+        class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2.5 text-sm font-bold transition hover:bg-white hover:text-forest-700"
+      >
+        <Icon name="map" size={17} />
+        Open in Google Maps
+      </a>
+    </div>
+
+    <div>
+      <p class="text-xs font-black tracking-[0.16em] text-white/70 uppercase">This guide</p>
+      <nav class="mt-5 grid gap-3 text-sm" aria-label="English pages">
+        {
+          EN_NAV.map((item) => (
+            <a class="text-white/75 hover:text-white" href={item.href}>
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+
+    <div>
+      <p class="text-xs font-black tracking-[0.16em] text-white/70 uppercase">
+        Official sources
+      </p>
+      <nav class="mt-5 grid gap-3 text-sm" aria-label="Official sources">
+        {
+          OFFICIAL_SOURCES.map((source) => (
+            <a
+              class="text-white/75 hover:text-white"
+              href={source.url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {source.nameEn}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="section-shell flex flex-col gap-4 py-6 text-xs leading-6 text-white/70">
+      <p>
+        <strong class="font-black text-white/85">
+          {ATTRACTION.fullName}（{ATTRACTION.officialName}）
+        </strong>
+        <span aria-hidden="true">・</span>
+        {ATTRACTION.streetAddressEn}, {ATTRACTION.postalCode} {ATTRACTION.city}, {ATTRACTION.state},{" "}
+        {ATTRACTION.country}
+        <span aria-hidden="true">・</span>
+        Google Maps rating {GOOGLE_REVIEW.rating} from {GOOGLE_REVIEW.reviewCount.toLocaleString("en-US")} reviews
+        (checked {reviewChecked})
+      </p>
+      <p>
+        {EN_SITE.disclaimer} This English section covers the visitor guide, getting there, the rail
+        bike routes and day-trip planning. The Chinese version covers more topics; the language switch
+        at the top of each page takes you to the same page in the other language.
+      </p>
+      <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p>© {new Date().getFullYear()} Longteng Bridge</p>
+        <p class="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span class="text-white/55">Site policies (Traditional Chinese only):</span>
+          <a class="hover:text-white" href="/sources/" hreflang="zh-Hant-TW" lang="zh-Hant-TW">
+            Sources &amp; image credits
+          </a>
+          <a class="hover:text-white" href="/privacy/" hreflang="zh-Hant-TW" lang="zh-Hant-TW">
+            Privacy policy
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>

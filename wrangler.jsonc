@@ -1,6 +1,17 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "longteng-bridge-guide",
-  "pages_build_output_dir": "./dist",
-  "compatibility_date": "2026-07-24"
+  "compatibility_date": "2026-07-24",
+  "compatibility_flags": ["nodejs_compat"],
+  // Astro（Cloudflare adapter）產生的 Worker 進入點
+  "main": "./dist/_worker.js/index.js",
+  // 靜態頁面、圖片與其他建置產物由 Workers Static Assets 直接服務
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page"
+  },
+  "observability": {
+    "enabled": true
+  }
 }

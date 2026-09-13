@@ -6,7 +6,7 @@ slug: "accessibility"
 eyebrow: "無障礙動線"
 intro: "主要橋體不必走進深處才能看見，但景點並非全區平坦無障礙。輪椅、嬰兒車與行動較慢者，應以入口周邊視角為主，並在現場依坡度與路面狀況調整。"
 readTime: "約 4 分鐘讀完"
-image: "bridgeSide"
+image: "bridgeMorning"
 facts:
   - label: "入口觀景"
     value: "可看主要橋體"

@@ -6,7 +6,7 @@ slug: "photo-spots"
 eyebrow: "攝影攻略"
 intro: "最經典的畫面是紅磚橋拱與山林；想拍出差異，可加入斷面、補強構件與後方鐵橋。所有構圖都應在開放動線內完成，不進入軌道或跨越護欄。"
 readTime: "約 5 分鐘讀完"
-image: "hero"
+image: "bridgeMorning"
 facts:
   - label: "經典構圖"
     value: "正面連續橋拱"

@@ -1,0 +1,182 @@
+---
+import Icon from "./Icon.astro";
+
+interface Plan {
+  key: string;
+  icon: "family" | "camera" | "walk";
+  tone: string;
+  name: string;
+  audience: string;
+  duration: string;
+  pace: string;
+  window: string;
+  skeleton: string[];
+  focus: string;
+  cautions: string[];
+  link: { label: string; href: string };
+}
+
+const plans: Plan[] = [
+  {
+    key: "family",
+    icon: "family",
+    tone: "border-forest-100 bg-forest-50",
+    name: "親子家庭",
+    audience: "有 3–12 歲孩童同行，可能推車、可能帶長輩",
+    duration: "2–3 小時（不含用餐）",
+    pace: "慢、短、定點，一天一個主景點就好",
+    window: "上午 9–11 點或下午 2–4 點，避開正午曝曬",
+    skeleton: [
+      "停車區整裝、上洗手間、補水",
+      "主要觀景平台：先讓孩子看懂「橋為什麼會斷」",
+      "沿解說牌散步，認識紅磚砌法與 1935 年地震",
+      "勝興老街用餐（提早或延後避開 12:00–13:30）",
+      "勝興車站月台與舊山線鐵道散步後返程",
+    ],
+    focus: "用「看得見的東西」講故事：紅磚、鋼軌、斷面、火車，比抽象年代更容易記住。",
+    cautions: [
+      "不讓孩子攀爬磚拱與遺構，這同時是安全與文化資產問題",
+      "溪床與邊坡多處沒有護欄，全程牽好小孩",
+      "山區午後雷陣雨來得快，看到積雲變厚就先撤",
+    ],
+    link: { label: "親子同行完整建議", href: "/family-guide/" },
+  },
+  {
+    key: "photo",
+    icon: "camera",
+    tone: "border-brick-100 bg-brick-50/70",
+    name: "攝影與自然觀察",
+    audience: "重視光線、雲霧與生態，願意為一個畫面等待",
+    duration: "單點 2–4 小時，可安排兩個時段",
+    pace: "定點久候、早出晚歸，行程服從光線",
+    window: "日出後 1 小時與日落前 1.5 小時；3 月清晨雲霧機率最高",
+    skeleton: [
+      "日出前抵達，卡好北段紅磚拱的順光位置",
+      "上午轉往魚藤坪鐵橋與舊山線沿線補畫面",
+      "中午休息、整理素材，避開最硬的頂光",
+      "午後觀察積雲發展，等雨後雲瀑與斜射光",
+      "4–5 月可延續到夜間賞螢（需紅光手電筒）",
+    ],
+    focus: "11 月能見度最佳、3 月雲霧最有氣氛、12–1 月冬陽斜射最能表現紅磚層次。",
+    cautions: [
+      "不為取景踩踏遺構、跨越圍籬或進入封閉區",
+      "空拍與商業攝影需依相關規定申請，勿違規飛行",
+      "夜間山區訊號與照明都弱，務必結伴並告知行程",
+    ],
+    link: { label: "攝影點位與時段", href: "/photo-spots/" },
+  },
+  {
+    key: "accessible",
+    icon: "walk",
+    tone: "border-black/8 bg-cream/70",
+    name: "低體力與無障礙",
+    audience: "長輩、行動不便、術後恢復，或有輪椅、助行器同行",
+    duration: "1–2 小時，可拆成多段休息",
+    pace: "短程、多次休息，不勉強走完所有動線",
+    window: "上午 9–11 點或下午 3–5 點，避開日正當中",
+    skeleton: [
+      "車輛就近停靠、先確認無障礙廁所位置",
+      "以主要觀景平台為核心，取景與解說都在此完成",
+      "沿平整鋪面的解說區短程移動，隨時可原路折返",
+      "視體力決定是否續往勝興車站一帶",
+      "備案：三義市區室內景點（木雕、文化場館）",
+    ],
+    focus: "主要觀景平台與停車區一帶多為平整鋪面，可在有限範圍內取得最好的視角。",
+    cautions: [
+      "磚階、溪谷與舊山線步道有階梯與坡度，輪椅與推車不建議進入",
+      "山區風大且溫差明顯，保暖與防風比平地更重要",
+      "預留比預期更長的移動時間，行程不要排滿",
+    ],
+    link: { label: "低體力與無障礙動線", href: "/accessibility/" },
+  },
+];
+---
+
+<section class="section-shell pt-20 sm:pt-28" aria-labelledby="plans-heading">
+  <div class="max-w-2xl">
+    <p class="text-xs font-black tracking-[0.2em] text-brick-700 uppercase">
+      按人群選方案
+    </p>
+    <h2
+      id="plans-heading"
+      class="editorial-title mt-4 text-3xl font-bold leading-tight text-ink sm:text-4xl"
+    >
+      同一座橋，<br />三種完全不同的走法
+    </h2>
+    <p class="mt-5 text-sm leading-7 text-stone sm:text-base">
+      行程好不好玩，取決於同行的人是誰。下面三種方案分別對應不同的體力、節奏與目的，
+      先對號入座，再決定要停留多久、要不要搭鐵道自行車。
+    </p>
+  </div>
+
+  <div class="mt-10 grid gap-4 lg:grid-cols-3">
+    {
+      plans.map((plan) => (
+        <article
+          class:list={["flex flex-col rounded-[1.75rem] border p-6 shadow-soft sm:p-7", plan.tone]}
+        >
+          <div class="flex items-center gap-3">
+            <span class="flex size-11 items-center justify-center rounded-2xl bg-white/80 text-forest-700">
+              <Icon name={plan.icon} size={22} />
+            </span>
+            <div>
+              <h3 class="editorial-title text-xl font-bold text-ink">{plan.name}</h3>
+              <p class="mt-0.5 text-xs font-bold text-stone">{plan.duration}</p>
+            </div>
+          </div>
+
+          <p class="mt-5 text-xs leading-6 text-stone">{plan.audience}</p>
+
+          <dl class="mt-5 space-y-3 border-y border-black/8 py-5 text-xs">
+            <div class="flex gap-3">
+              <dt class="w-16 shrink-0 font-black text-stone">節奏</dt>
+              <dd class="font-bold text-ink">{plan.pace}</dd>
+            </div>
+            <div class="flex gap-3">
+              <dt class="w-16 shrink-0 font-black text-stone">時段</dt>
+              <dd class="font-bold text-ink">{plan.window}</dd>
+            </div>
+          </dl>
+
+          <ol class="mt-5 space-y-2.5">
+            {plan.skeleton.map((step, index) => (
+              <li class="flex gap-3 text-xs leading-6 text-stone">
+                <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-white/80 text-[0.62rem] font-black text-forest-700">
+                  {index + 1}
+                </span>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+
+          <p class="mt-5 rounded-2xl bg-white/70 p-4 text-xs leading-6 text-ink">
+            {plan.focus}
+          </p>
+
+          <div class="mt-5">
+            <p class="flex items-center gap-2 text-[0.68rem] font-black tracking-[0.1em] text-brick-700 uppercase">
+              <Icon name="shield" size={14} />
+              注意
+            </p>
+            <ul class="mt-2.5 space-y-2 text-xs leading-6 text-stone">
+              {plan.cautions.map((item) => (
+                <li class="flex gap-2">
+                  <span class="mt-2 size-1.5 shrink-0 rounded-full bg-brick-300" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <a
+            href={plan.link.href}
+            class="mt-6 inline-flex items-center gap-2 self-start rounded-full bg-white px-4 py-2.5 text-xs font-black text-forest-700 shadow-sm transition hover:bg-forest-700 hover:text-white"
+          >
+            {plan.link.label}
+            <Icon name="arrow" size={15} />
+          </a>
+        </article>
+      ))
+    }
+  </div>
+</section>

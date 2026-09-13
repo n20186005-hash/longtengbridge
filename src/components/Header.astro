@@ -2,8 +2,17 @@
 import Icon from "./Icon.astro";
 import Logo from "./Logo.astro";
 import { NAV, SITE } from "../data/site";
+import { EN_HOME, enHrefFor } from "../data/i18n";
 
 const currentPath = Astro.url.pathname;
+
+/**
+ * 語言切換：優先指向「這一頁的英文版」，讓讀者停在同一個主題上。
+ * 沒有英文版的中文頁才退回英文首頁，確保切換鈕不會指向 404。
+ */
+const englishPair = enHrefFor(currentPath);
+const englishHref = englishPair ?? EN_HOME;
+const hasEnglishPage = Boolean(englishPair);
 ---
 
 <header
@@ -12,14 +21,14 @@ const currentPath = Astro.url.pathname;
   <div class="section-shell flex h-[4.75rem] items-center justify-between gap-6">
     <Logo compact />
 
-    <nav class="hidden items-center gap-1 lg:flex" aria-label="主要導覽">
+    <nav class="hidden items-center gap-0.5 lg:flex" aria-label="主要導覽">
       {
         NAV.map((item) => (
           <a
             href={item.href}
             aria-current={currentPath.startsWith(item.href) ? "page" : undefined}
             class:list={[
-              "rounded-full px-3.5 py-2 text-[0.82rem] font-bold tracking-wide transition-colors",
+              "rounded-full px-3 py-2 text-[0.82rem] font-bold tracking-wide transition-colors",
               currentPath.startsWith(item.href)
                 ? "bg-brick-100 text-brick-700"
                 : "text-stone hover:bg-white/80 hover:text-ink",
@@ -40,6 +49,17 @@ const currentPath = Astro.url.pathname;
       >
         <Icon name="map" size={17} />
         開啟地圖
+      </a>
+
+      <a
+        href={englishHref}
+        hreflang="en"
+        lang="en"
+        aria-label={hasEnglishPage ? "閱讀這一頁的英文版" : "前往英文版攻略"}
+        title={hasEnglishPage ? "這一頁的英文版" : "英文版攻略"}
+        class="hidden items-center rounded-full border border-black/10 bg-white px-3.5 py-2.5 text-sm font-black tracking-wide text-ink transition hover:border-brick-300 sm:inline-flex"
+      >
+        EN
       </a>
 
       <details class="group relative lg:hidden">
@@ -65,6 +85,15 @@ const currentPath = Astro.url.pathname;
                 </a>
               ))
             }
+            <a
+              href={englishHref}
+              hreflang="en"
+              lang="en"
+              class="flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-bold text-ink hover:bg-cream"
+            >
+              {hasEnglishPage ? "這一頁的英文版" : "英文版攻略"}
+              <Icon name="chevron" size={16} />
+            </a>
             <a
               href={SITE.mapUrl}
               target="_blank"

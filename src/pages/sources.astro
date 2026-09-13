@@ -1,6 +1,7 @@
 ---
 import SimplePage from "../layouts/SimplePage.astro";
 import { IMAGE_CREDITS } from "../data/site";
+import { ATTRACTION, GOOGLE_REVIEW, OFFICIAL_SOURCES } from "../data/attraction";
 ---
 
 <SimplePage
@@ -10,21 +11,29 @@ import { IMAGE_CREDITS } from "../data/site";
 >
   <h2>核心資料來源</h2>
   <ul>
+    {
+      OFFICIAL_SOURCES.map((source) => (
+        <li>
+          <a href={source.url} target="_blank" rel="noopener">{source.name}</a>
+          {" — "}
+          {source.note}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>景點評分與評論來源</h2>
+  <p>
+    {ATTRACTION.shortNameZh}的 Google 地圖評分為
+    <strong>{GOOGLE_REVIEW.rating}／{GOOGLE_REVIEW.max}</strong>，累積
+    <strong>{GOOGLE_REVIEW.reviewCount.toLocaleString("en-US")}</strong> 則評論。此為 Google
+    地圖使用者產生的公開資料，會隨時間變動，本站僅如實顯示並標註來源與核對日期，
+    不將其視為本站自身的評分，也不放入結構化資料。
+  </p>
+  <ul>
     <li>
-      <a href="https://nchdb.boch.gov.tw/assets/overview/monument/20031125000001" target="_blank" rel="noopener">國家文化資產網：魚藤坪斷橋</a>
-      — 文化資產名稱、年代與歷史。
-    </li>
-    <li>
-      <a href="https://miaolitravel.net/article.aspx?sNo=04004516" target="_blank" rel="noopener">苗栗文化觀光旅遊網：龍騰斷橋、南斷橋</a>
-      — 地方景點與旅遊資訊。
-    </li>
-    <li>
-      <a href="https://www.taiwan.net.tw/m1.aspx?id=c100_342&sno=0001110" target="_blank" rel="noopener">交通部觀光署：龍騰斷橋</a>
-      — 景點位置與全國旅遊資訊。
-    </li>
-    <li>
-      <a href="https://www.oml-railbike.com/_pages/info/index.php" target="_blank" rel="noopener">舊山線鐵道自行車：乘車資訊</a>
-      — A、B、C 路線、票價、班次與乘車規則。
+      <a href={GOOGLE_REVIEW.sourceUrl} target="_blank" rel="noopener">Google 地圖：{ATTRACTION.shortNameZh}（{ATTRACTION.officialName}）</a>
+      — 評分、評論數與地點類別，最後核對：{GOOGLE_REVIEW.checkedAtDisplay}。
     </li>
   </ul>
 
@@ -43,6 +52,24 @@ import { IMAGE_CREDITS } from "../data/site";
       ))
     }
   </ul>
+
+  <h2>天氣與氣候資料</h2>
+  <p>
+    本站的即時天氣、逐時降雨與 7 日預報採用
+    <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>
+    的氣象資料（依 CC BY 4.0 授權），並重新整理成面向旅客的穿著、行程與攜帶物品建議。
+    建議內容是依預報條件推導的判斷，並非官方警示。
+  </p>
+  <p>
+    颱風、豪雨、強風等官方警特報，以及最終的天氣判斷依據，請以
+    <a href="https://www.cwa.gov.tw/" target="_blank" rel="noopener">中央氣象署</a>
+    的公告為準。
+  </p>
+  <p>
+    四季章節使用的月平均氣溫、降雨日數、雨量級別與相對濕度為常住氣候概值，
+    以中央氣象署 1991–2020 年氣候平均值為基礎整理，並依龍騰地區地勢條件略作調整；
+    數值只適合用來安排季節與裝備，不代表任何一天的實際天氣。
+  </p>
 
   <h2>Google 地圖</h2>
   <p>

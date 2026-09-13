@@ -3,14 +3,20 @@
 @theme {
   --color-brick-50: #fbf5f1;
   --color-brick-100: #f2e4dc;
+  --color-brick-200: #e6cec4;
+  --color-brick-300: #d3a897;
+  --color-brick-400: #bd8069;
   --color-brick-500: #a74935;
   --color-brick-600: #913c2b;
   --color-brick-700: #753126;
   --color-forest-50: #f3f7f4;
   --color-forest-100: #dce8df;
+  --color-forest-200: #c8dbcd;
+  --color-forest-300: #a6c3ae;
   --color-forest-500: #446d59;
   --color-forest-600: #315847;
   --color-forest-700: #244438;
+  --color-forest-800: #1b332a;
   --color-cream: #f7f3eb;
   --color-ink: #252825;
   --color-stone: #6f716d;

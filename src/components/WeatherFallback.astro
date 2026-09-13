@@ -1,0 +1,101 @@
+---
+import Icon from "./Icon.astro";
+import { SEASONS } from "../data/climate";
+
+// 即時預報載入前的替代內容：改呈現「常年氣候概況」，
+// 讓旅客在沒有即時資料時仍能得到可用的穿著與季節判斷。
+const quickSeasons = SEASONS.map((season) => ({
+  name: season.name,
+  summary: season.summary,
+  gear: season.gear[0] ?? "",
+}));
+
+const currentSeasonKey = (() => {
+  const month = Number(
+    new Intl.DateTimeFormat("en-US", { month: "numeric", timeZone: "Asia/Taipei" }).format(
+      new Date(),
+    ),
+  );
+  if (month >= 3 && month <= 4) return "spring";
+  if (month === 5 || month === 6) return "meiyu";
+  if (month === 7 || month === 8) return "summer";
+  if (month >= 9 && month <= 11) return "autumn";
+  return "winter";
+})();
+---
+
+<div
+  class="overflow-hidden rounded-[2rem] border border-black/8 bg-white shadow-soft"
+  aria-labelledby="weather-heading"
+>
+  <div class="grid lg:grid-cols-[0.88fr_1.12fr]">
+    <div class="relative overflow-hidden bg-forest-700 p-6 text-white sm:p-9">
+      <div
+        class="pointer-events-none absolute -right-20 -top-20 size-64 rounded-full border border-white/10"
+        aria-hidden="true"
+      >
+      </div>
+      <div class="relative">
+        <p class="text-xs font-black tracking-[0.17em] text-white/55 uppercase">
+          龍騰山區天氣
+        </p>
+        <h2
+          id="weather-heading"
+          class="editorial-title mt-4 text-3xl font-bold leading-tight sm:text-4xl"
+        >
+          天氣先看，<br />行程再排
+        </h2>
+        <p class="mt-4 max-w-md text-sm leading-7 text-white/66">
+          先確認當日降雨與體感，再決定要不要上山、要不要搭鐵道自行車。
+        </p>
+
+        <div class="mt-7 rounded-2xl border border-white/10 bg-black/12 p-5">
+          <p class="flex items-center gap-2 text-xs font-black tracking-[0.14em] text-white/55 uppercase">
+            <Icon name="sun" size={15} />
+            本季氣候概況
+          </p>
+          <p class="mt-3 text-sm leading-7 text-white/80">
+            {SEASONS.find((season) => season.key === currentSeasonKey)?.summary ??
+              "山區天氣變化快，出發前請再次確認即時預報。"}
+          </p>
+          <p class="mt-4 text-xs leading-6 text-white/55">
+            即時預報載入後會顯示目前氣溫、降雨機率與未來一週趨勢。
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 sm:p-9">
+      <p class="text-xs font-black tracking-[0.14em] text-stone uppercase">四季常態</p>
+      <h3 class="editorial-title mt-2 text-2xl font-bold text-ink">該帶什麼，看季節就知道</h3>
+
+      <ul class="mt-5 grid gap-2 sm:grid-cols-2">
+        {quickSeasons.map((season) => (
+          <li class="rounded-2xl border border-black/8 bg-cream/70 p-4">
+            <p class="text-sm font-black text-ink">{season.name}</p>
+            <p class="mt-2 text-xs leading-6 text-stone">{season.summary}</p>
+          </li>
+        ))}
+      </ul>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a
+          href="/seasonal-guide/"
+          class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-4 py-2.5 text-xs font-black text-white transition hover:bg-forest-800"
+        >
+          <Icon name="calendar" size={15} />
+          四季遊覽策略
+        </a>
+        <a
+          href="https://www.cwa.gov.tw/"
+          target="_blank"
+          rel="noreferrer"
+          class="inline-flex items-center gap-2 rounded-full border border-black/10 px-4 py-2.5 text-xs font-black text-ink transition hover:border-forest-600 hover:text-forest-700"
+        >
+          <Icon name="arrow" size={15} />
+          中央氣象署警特報
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

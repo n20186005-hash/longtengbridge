@@ -1,0 +1,126 @@
+---
+import Icon from "./Icon.astro";
+import {
+  ATTRACTION,
+  AUTHORITY_LINKS,
+  GOOGLE_REVIEW,
+  OFFICIAL_SOURCES,
+} from "../data/attraction";
+
+interface Props {
+  /** 章節說明可依頁面調整 */
+  heading?: string;
+  intro?: string;
+  /** 是否顯示三種資訊標籤說明 */
+  showTags?: boolean;
+}
+
+const {
+  heading = "資料來源與核對說明",
+  intro = "本站的歷史、名稱與位置以官方資料為主；票價、班次與停車等易變資訊則提供判斷方式與來源連結，並標示最後核對日期。",
+  showTags = true,
+} = Astro.props;
+---
+
+<section
+  class="section-shell py-16 sm:py-20"
+  aria-labelledby="sources-heading"
+>
+  <div class="grid gap-10 lg:grid-cols-[0.82fr_1.18fr]">
+    <div>
+      <span class="eyebrow">Sources &amp; E-E-A-T</span>
+      <h2
+        id="sources-heading"
+        class="editorial-title mt-5 text-3xl font-bold text-ink sm:text-4xl"
+      >
+        {heading}
+      </h2>
+      <p class="mt-5 text-sm leading-8 text-stone">{intro}</p>
+
+      <dl class="mt-7 grid gap-3">
+        <div class="rounded-xl border border-black/8 bg-white/70 p-4">
+          <dt class="text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">最後核對</dt>
+          <dd class="mt-1 text-sm font-extrabold text-ink">{GOOGLE_REVIEW.checkedAtDisplay}</dd>
+        </div>
+        <div class="rounded-xl border border-black/8 bg-white/70 p-4">
+          <dt class="text-[0.67rem] font-black tracking-[0.12em] text-stone uppercase">景點評分來源</dt>
+          <dd class="mt-1 text-sm font-extrabold leading-6 text-ink">
+            <a
+              href={GOOGLE_REVIEW.sourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-brick-700"
+            >
+              {GOOGLE_REVIEW.sourceName}
+            </a>
+          </dd>
+        </div>
+      </dl>
+
+      {
+        showTags && (
+          <div class="mt-6 grid gap-2 text-xs font-bold text-stone">
+            <p><span class="mr-2 rounded-full bg-forest-50 px-2.5 py-1 text-forest-700">官方資料</span>以政府機關或營運單位公告為準。</p>
+            <p><span class="mr-2 rounded-full bg-brick-50 px-2.5 py-1 text-brick-700">現場核對</span>依現場標示與實地觀察。</p>
+            <p><span class="mr-2 rounded-full bg-cream px-2.5 py-1 text-stone">編輯建議</span>本站依旅客情境整理的安排建議。</p>
+          </div>
+        )
+      }
+    </div>
+
+    <div class="grid gap-3">
+      {
+        OFFICIAL_SOURCES.map((source) => (
+          <a
+            href={source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="group flex items-start gap-4 rounded-2xl border border-black/8 bg-white/70 p-5 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-soft"
+          >
+            <span class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full bg-forest-100 text-forest-700">
+              <Icon name="check" size={17} />
+            </span>
+            <span class="min-w-0">
+              <span class="flex flex-wrap items-center gap-2">
+                <strong class="text-sm text-ink">{source.name}</strong>
+                <span class="rounded-full bg-cream px-2.5 py-0.5 text-[0.68rem] font-black text-stone">
+                  {source.scope}
+                </span>
+              </span>
+              <span class="mt-1.5 block text-sm leading-6 text-stone">{source.note}</span>
+            </span>
+            <span class="ml-auto mt-1 text-brick-600 transition group-hover:translate-x-1">
+              <Icon name="arrow" size={17} />
+            </span>
+          </a>
+        ))
+      }
+
+      <div class="rounded-2xl border border-forest-100 bg-forest-50 p-5">
+        <p class="text-xs font-black tracking-[0.14em] text-forest-600 uppercase">
+          官方觀光入口
+        </p>
+        <ul class="mt-3 grid gap-2 text-sm">
+          {
+            AUTHORITY_LINKS.map((link) => (
+              <li class="flex items-center gap-2 text-forest-700">
+                <Icon name="compass" size={16} />
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="font-bold underline decoration-forest-100 underline-offset-4 hover:text-forest-600"
+                >
+                  {link.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <p class="mt-4 text-xs leading-6 text-forest-700/80">
+          本站為獨立旅遊指南，並非 {ATTRACTION.shortNameZh}、苗栗縣政府或舊山線鐵道自行車的官方網站。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
