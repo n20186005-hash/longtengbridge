@@ -13,6 +13,8 @@ export const ATTRACTION = {
   officialName: "魚藤坪斷橋",
   /** 遊客最常用的名稱：龍騰斷橋 */
   shortNameZh: "龍騰斷橋",
+  /** 另一種常見名稱變體：魚藤坪橋遺址（與魚藤坪斷橋同指一處紅磚橋體遺跡） */
+  altNameZh: "魚藤坪橋遺址",
   /** 對應網域 longtengbridge.com 的英文俗稱 */
   shortName: "Longteng Bridge",
   /** 城市／鄉鎮 */
@@ -83,14 +85,14 @@ export const HERO_IMAGE_ALT = `${ATTRACTION.shortNameZh}（${ATTRACTION.official
  */
 export const GOOGLE_REVIEW = {
   rating: 4.3,
-  reviewCount: 24443,
+  reviewCount: 24497,
   max: 5,
   category: ATTRACTION.googleCategory,
   sourceName: "Google 地圖使用者評分",
   sourceUrl: ATTRACTION.mapsShareUrl,
   /** 本次核對日期 */
-  checkedAt: "2026-09-13",
-  checkedAtDisplay: "2026 年 9 月 13 日",
+  checkedAt: "2026-10-10",
+  checkedAtDisplay: "2026 年 10 月 10 日",
 } as const;
 
 /** 星等陣列（用於畫面呈現 4.3 → 4 顆實心、1 顆部分） */
