@@ -17,6 +17,11 @@ import stationTunnel from "../assets/station-tunnel.jpg";
 import woodcarving from "../assets/woodcarving-village.jpg";
 import historicBridge from "../assets/historic-bridge.jpg";
 import reservoir from "../assets/reservoir.jpg";
+import huoyanshanTrail from "../assets/huoyanshan-trail.jpg";
+import woodMuseum from "../assets/sanyi-wood-museum.jpg";
+import taianOldStation from "../assets/taian-old-station.webp";
+import oldLineRailbike from "../assets/old-line-railbike.jpg";
+import shengxingFood from "../assets/shengxing-hakka-food.webp";
 import { SITE } from "../data/site";
 import { ATTRACTION } from "../data/attraction";
 import { relatedSlugsFor } from "../data/related-guides";
@@ -40,8 +45,19 @@ const images = {
   woodcarving,
   historicBridge,
   reservoir,
+  huoyanshanTrail,
+  woodMuseum,
+  taianOldStation,
+  oldLineRailbike,
+  shengxingFood,
 };
 const currentImage = images[guide.data.image];
+const mapDestination = guide.data.mapUrl || (guide.data.mapName
+  ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(guide.data.mapQuery || guide.data.mapName)}`
+  : ATTRACTION.mapsShareUrl);
+const galleryImages = guide.data.mapName
+  ? (guide.data.image === "shengxing" ? [oldLine] : guide.data.image === "oldLineRailbike" ? [stationTunnel] : [])
+  : [bridgeBody, bridgeMorning].filter((asset) => asset !== currentImage);
 const canonicalUrl = `https://longtengbridge.com/${guide.data.slug}/`;
 const attractionId = `${SITE.url}/#attraction`;
 
@@ -131,7 +147,7 @@ const breadcrumbSchema = {
               直接看重點
             </a>
             <a
-              href={ATTRACTION.mapsShareUrl}
+              href={mapDestination}
               target="_blank"
               rel="noopener"
               class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3.5 py-2 text-white"
@@ -145,7 +161,7 @@ const breadcrumbSchema = {
         <figure class="overflow-hidden rounded-[1.75rem] bg-forest-50 shadow-soft">
           <Image
             src={currentImage}
-            alt={`${guide.data.title}｜${ATTRACTION.shortNameZh}（${ATTRACTION.officialName}）${ATTRACTION.cityZh}${ATTRACTION.stateZh}`}
+            alt={`${guide.data.mapName || ATTRACTION.shortNameZh}｜${guide.data.title}實景照片`}
             widths={[640, 960, 1280]}
             sizes="(min-width: 1024px) 42vw, 100vw"
             format="avif"
@@ -215,6 +231,19 @@ const breadcrumbSchema = {
           <Content />
         </div>
 
+        <section class="mt-12" aria-label="景點實景照片">
+          <span class="eyebrow">實景觀察</span>
+          <h2 class="editorial-title mb-5 mt-3 text-3xl font-bold text-ink">從不同視角認識現場</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {galleryImages.map((photo, index) => (
+              <figure class="overflow-hidden rounded-2xl bg-white shadow-soft">
+                <Image src={photo} alt={`${guide.data.mapName || "龍騰斷橋"}周邊實景參考照片 ${index + 1}`} widths={[640, 960]} sizes="(min-width: 640px) 40vw, 90vw" class="aspect-[4/3] w-full object-cover" />
+                <figcaption class="px-4 py-3 text-xs leading-5 text-stone">{guide.data.mapName ? "周邊舊山線環境參考" : "紅磚橋體與山線景觀參考"}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
+
         {
           guide.data.mapQuery && (
             <section class="mt-14">
@@ -222,7 +251,7 @@ const breadcrumbSchema = {
               <h2 class="editorial-title mb-6 mt-4 text-3xl font-bold text-ink sm:text-4xl">
                 從地圖開始規劃
               </h2>
-              <GoogleMap query={guide.data.mapQuery} />
+              <GoogleMap query={guide.data.mapQuery} title={`${guide.data.mapName || "龍騰斷橋"} Google 地圖`} locationName={guide.data.mapName} locationUrl={guide.data.mapUrl} />
             </section>
           )
         }
@@ -257,7 +286,7 @@ const breadcrumbSchema = {
             先在 Google 地圖確認路線與即時道路狀況。
           </p>
           <a
-            href={SITE.mapUrl}
+            href={mapDestination}
             target="_blank"
             rel="noopener"
             class="mt-4 inline-flex items-center gap-2 text-sm font-black"

@@ -24,6 +24,8 @@ const guides = defineCollection({
       }),
     ),
     mapQuery: z.string().optional(),
+    mapName: z.string().optional(),
+    mapUrl: z.string().url().optional(),
     image: z
       .enum([
         "hero",
@@ -38,6 +40,11 @@ const guides = defineCollection({
         "woodcarving",
         "historicBridge",
         "reservoir",
+        "huoyanshanTrail",
+        "woodMuseum",
+        "taianOldStation",
+        "oldLineRailbike",
+        "shengxingFood",
       ])
       .default("hero"),
   }),

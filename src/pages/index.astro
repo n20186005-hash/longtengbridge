@@ -20,6 +20,10 @@ import hero from "../assets/longteng-hero.jpg";
 import bridgeSide from "../assets/longteng-side.jpg";
 import ironBridge from "../assets/iron-bridge.jpg";
 import shengxing from "../assets/shengxing-station.jpg";
+import woodMuseum from "../assets/sanyi-wood-museum.jpg";
+import taianOldStation from "../assets/taian-old-station.webp";
+import huoyanshanTrail from "../assets/huoyanshan-trail.jpg";
+import shengxingFood from "../assets/shengxing-hakka-food.webp";
 
 const faqs = [
   {
@@ -224,6 +228,36 @@ const schema = [faqSchema];
   <TravelerPlans />
 
   <RoutePlans />
+
+  <section class="section-shell py-16 sm:py-20" aria-label="周邊遊覽入口">
+    <div class="flex flex-wrap items-end justify-between gap-5">
+      <div>
+        <span class="eyebrow">周邊遊覽</span>
+        <h2 class="editorial-title mt-4 text-4xl font-bold text-ink sm:text-5xl">從斷橋出發，探索三義與舊山線</h2>
+        <p class="mt-4 max-w-3xl text-sm leading-7 text-stone">先看橋體，再依興趣選車站、老街、木雕或自然步道。每站均提供獨立地圖搜索，避免導航回龍騰斷橋。</p>
+      </div>
+      <a href="/guide-library/" class="inline-flex items-center gap-2 text-sm font-black text-brick-700">查看 31 篇延伸攻略 <Icon name="arrow" size={17} /></a>
+    </div>
+    <div class="mt-9 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {[
+        { title: "勝興車站", subtitle: "木造站房與舊山線", href: "/shengxing-station-guide/", image: shengxing },
+        { title: "勝興老街", subtitle: "客家飲食與散步", href: "/shengxing-old-street-food/", image: shengxingFood },
+        { title: "魚藤坪鐵橋", subtitle: "紅磚與鋼橋的時代對話", href: "/yutengping-bridge-view/", image: ironBridge },
+        { title: "三義木雕博物館", subtitle: "木雕工藝與地方文化", href: "/sanyi-wood-sculpture/", image: woodMuseum },
+        { title: "泰安舊站", subtitle: "舊山線車站的另一種風貌", href: "/taian-old-station/", image: taianOldStation },
+        { title: "火炎山", subtitle: "紅褐色礫岩地形與健行", href: "/huoyanshan-guide/", image: huoyanshanTrail },
+      ].map((item) => (
+        <a href={item.href} class="group overflow-hidden rounded-[1.5rem] border border-black/8 bg-white shadow-soft transition hover:-translate-y-1 hover:shadow-lg">
+          <Image src={item.image} alt={`${item.title}實景照片`} widths={[560, 840]} sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" class="aspect-[16/10] w-full object-cover" />
+          <div class="p-6">
+            <h3 class="text-lg font-extrabold text-ink">{item.title}</h3>
+            <p class="mt-2 text-sm text-stone">{item.subtitle}</p>
+            <span class="mt-5 inline-flex items-center gap-2 text-xs font-black text-brick-700">閱讀獨立指南 <Icon name="arrow" size={15} /></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
 
   <section class="section-shell py-20 sm:py-28">
     <div class="grid items-end gap-8 lg:grid-cols-[0.8fr_1.2fr]">

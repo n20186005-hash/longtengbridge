@@ -6,6 +6,8 @@ import { ATTRACTION, AUTHORITY_LINKS } from "../data/attraction";
 interface Props {
   query?: string;
   title?: string;
+  locationName?: string;
+  locationUrl?: string;
   /** 介面語系；英文版頁面傳 "en" 以輸出英文說明文字 */
   lang?: string;
 }
@@ -13,17 +15,20 @@ interface Props {
 const {
   query = "龍騰斷橋, 苗栗縣三義鄉",
   title = `${ATTRACTION.shortNameZh} Google 地圖`,
+  locationName,
+  locationUrl,
   lang = "zh-Hant-TW",
 } = Astro.props;
 const isEnglish = lang.toLowerCase().startsWith("en");
-const isBridgeLocation =
-  query.includes("龍騰斷橋") || query.includes("魚藤坪斷橋");
+const isBridgeLocation = !locationName && (
+  query.includes("龍騰斷橋") || query.includes("魚藤坪斷橋")
+);
 const src = isBridgeLocation
   ? ATTRACTION.mapsEmbedSrc
   : `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=15&output=embed`;
-const openUrl = isBridgeLocation
+const openUrl = locationUrl || (isBridgeLocation
   ? SITE.mapUrl
-  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+  : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`);
 const primaryAuthority = AUTHORITY_LINKS[0];
 ---
 
@@ -50,18 +55,16 @@ const primaryAuthority = AUTHORITY_LINKS[0];
           </p>
         ) : (
           <p class="font-bold text-ink">
-            {ATTRACTION.shortNameZh}／{ATTRACTION.officialName}
+            {locationName || `${ATTRACTION.shortNameZh}／${ATTRACTION.officialName}`}
           </p>
         )
       }
       <p class="mt-1 text-sm text-stone">
-        {isEnglish
+        {locationName ? query : isEnglish
           ? `${ATTRACTION.streetAddressEn}, ${ATTRACTION.postalCode} ${ATTRACTION.city}, ${ATTRACTION.state}, ${ATTRACTION.country}`
           : `${ATTRACTION.postalCode} ${ATTRACTION.cityZh}${ATTRACTION.streetAddress}`}
       </p>
-      <p class="mt-1 text-xs text-stone">
-        Plus Code{isEnglish ? ": " : "："}{ATTRACTION.plusCode}
-      </p>
+      {isBridgeLocation && <p class="mt-1 text-xs text-stone">Plus Code{isEnglish ? ": " : "："}{ATTRACTION.plusCode}</p>}
     </div>
     <a
       href={openUrl || SITE.mapUrl}
