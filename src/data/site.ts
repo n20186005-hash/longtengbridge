@@ -23,6 +23,12 @@ export const NAV = [
 
 export const GUIDE_LINKS = [
   {
+    title: "31 篇龍騰斷橋延伸攻略",
+    text: "停車、舊山線、周邊景點、攝影與親子路線分類查找。",
+    href: "/guide-library/",
+    kicker: "攻略目錄",
+  },
+  {
     title: "第一次來龍騰斷橋",
     text: "先看參觀方式、停留時間與行前重點。",
     href: "/visit/",
