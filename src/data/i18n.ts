@@ -1,8 +1,8 @@
 /**
  * 語系資料與 hreflang 配對。
  *
- * 本站以繁體中文（zh-Hant-TW）為預設語系，英文版只涵蓋國際旅客最需要的
- * 四頁（首頁、交通、鐵道自行車、一日遊），不做全站翻譯。
+ * 本站以繁體中文（zh-Hant-TW）為預設語系，英文版與中文攻略逐頁配對；
+ * 任何新增雙語頁面都應同步加入下方配對表並通過完整性驗收。
  *
  * 為什麼集中在這裡：
  * hreflang 必須雙向且互相對應，中文頁與英文頁各自寫一份很容易漏改一邊，
@@ -33,12 +33,61 @@ export const ZH_EN_PAIRS: { zh: string; en: string }[] = [
   { zh: "/transportation/", en: "/en/transportation/" },
   { zh: "/rail-bike/", en: "/en/rail-bike/" },
   { zh: "/one-day-trip/", en: "/en/itinerary/" },
+  { zh: "/bridge-halfday/", en: "/en/bridge-halfday/" },
+  { zh: "/nearby-attractions/", en: "/en/nearby-attractions/" },
+  { zh: "/railbike-a-route/", en: "/en/railbike-a-route/" },
+  { zh: "/railbike-b-route/", en: "/en/railbike-b-route/" },
+  { zh: "/visit/", en: "/en/visit/" },
+  { zh: "/parking/", en: "/en/parking/" },
+  { zh: "/rail-bike-routes/", en: "/en/rail-bike-routes/" },
+  { zh: "/photo-spots/", en: "/en/photo-spots/" },
+  { zh: "/north-south-bridge/", en: "/en/north-south-bridge/" },
+  { zh: "/accessibility/", en: "/en/accessibility/" },
+  { zh: "/family-guide/", en: "/en/family-guide/" },
+  { zh: "/accommodation/", en: "/en/accommodation/" },
+  { zh: "/food/", en: "/en/food/" },
+  { zh: "/parking-motorcycle/", en: "/en/parking-motorcycle/" },
+  { zh: "/brick-arch-structure/", en: "/en/brick-arch-structure/" },
+  { zh: "/bridge-history-1935/", en: "/en/bridge-history-1935/" },
+  { zh: "/bridge-management/", en: "/en/bridge-management/" },
+  { zh: "/bridge-pet-guide/", en: "/en/bridge-pet-guide/" },
+  { zh: "/bridge-rainy-day/", en: "/en/bridge-rainy-day/" },
+  { zh: "/bridge-safety-checklist/", en: "/en/bridge-safety-checklist/" },
+  { zh: "/bridge-school-trip/", en: "/en/bridge-school-trip/" },
+  { zh: "/bridge-sunrise-sunset/", en: "/en/bridge-sunrise-sunset/" },
+  { zh: "/bridge-ticket-hours/", en: "/en/bridge-ticket-hours/" },
+  { zh: "/bridge-two-day/", en: "/en/bridge-two-day/" },
+  { zh: "/bridge-wheelchair/", en: "/en/bridge-wheelchair/" },
+  { zh: "/huoyanshan-guide/", en: "/en/huoyanshan-guide/" },
+  { zh: "/miaoli-day-trip/", en: "/en/miaoli-day-trip/" },
+  { zh: "/north-bridge-photo/", en: "/en/north-bridge-photo/" },
+  { zh: "/parking-railbike/", en: "/en/parking-railbike/" },
+  { zh: "/parking-weekend/", en: "/en/parking-weekend/" },
+  { zh: "/railbike-booking/", en: "/en/railbike-booking/" },
+  { zh: "/railbike-c-route/", en: "/en/railbike-c-route/" },
+  { zh: "/railbike-family/", en: "/en/railbike-family/" },
+  { zh: "/sanyi-wood-sculpture/", en: "/en/sanyi-wood-sculpture/" },
+  { zh: "/shengxing-old-street-food/", en: "/en/shengxing-old-street-food/" },
+  { zh: "/shengxing-station-guide/", en: "/en/shengxing-station-guide/" },
+  { zh: "/south-bridge-access/", en: "/en/south-bridge-access/" },
+  { zh: "/taian-old-station/", en: "/en/taian-old-station/" },
+  { zh: "/taichung-day-trip/", en: "/en/taichung-day-trip/" },
+  { zh: "/train-to-bridge/", en: "/en/train-to-bridge/" },
+  { zh: "/yutengping-bridge-view/", en: "/en/yutengping-bridge-view/" },
+  { zh: "/yutengping-iron-bridge/", en: "/en/yutengping-iron-bridge/" },
+  { zh: "/updates/", en: "/en/updates/" },
+  { zh: "/guide-library/", en: "/en/guide-library/" },
+  { zh: "/science-and-responsibility/", en: "/en/science-and-responsibility/" },
+  { zh: "/history/", en: "/en/history/" },
+  { zh: "/legends/", en: "/en/legends/" },
+  { zh: "/seasonal-guide/", en: "/en/seasonal-guide/" },
+  { zh: "/facilities/", en: "/en/facilities/" },
 ];
 
 const EN_BY_ZH = new Map(ZH_EN_PAIRS.map((pair) => [pair.zh, pair.en]));
 const ZH_BY_EN = new Map(ZH_EN_PAIRS.map((pair) => [pair.en, pair.zh]));
 
-/** 英文版首頁；中文頁沒有對應英文版時的切換目標。 */
+/** 英文版首頁；中文頁暫時沒有對應英文版時的切換目標。 */
 export const EN_HOME = "/en/";
 
 /** 中文版首頁；全站預設語系的入口，也是英文頁找不到對應中文頁時的退路。 */
@@ -100,9 +149,10 @@ export function alternatesFor(lang: string, path: string): Alternate[] {
   return lang.toLowerCase().startsWith("en") ? enAlternates(path) : zhAlternates(path);
 }
 
-/** 英文頁面的導覽；英文版頁面少，刻意保持精簡。 */
+/** 英文頁面的核心導覽；完整攻略由專題目錄及相關連結連接。 */
 export const EN_NAV = [
   { label: "Visitor guide", href: "/en/" },
+  { label: "All guides", href: "/en/guide-library/" },
   { label: "Getting there", href: "/en/transportation/" },
   { label: "Rail bike routes", href: "/en/rail-bike/" },
   { label: "One-day trip plans", href: "/en/itinerary/" },
@@ -119,5 +169,5 @@ export const EN_SITE = {
   disclaimer:
     "LongtengBridge.com is an independent travel information site. It is not the official website of the Remains of Longteng Bridge, the Miaoli County Government or the Old Mountain Line Rail Bike. Always confirm tickets, schedules and opening status with the operating body.",
   /** 中文站的入口標籤（給英文頁面的「切換語言」與「更多中文資訊」使用） */
-  chineseSiteLabel: "中文版（繁體）",
+  chineseSiteLabel: "Traditional Chinese",
 };

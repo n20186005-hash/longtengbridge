@@ -9,6 +9,8 @@
     "build": "astro check && astro build",
     "preview": "astro build && wrangler dev",
     "check": "astro check",
+    "check:bilingual": "node scripts/check-bilingual.mjs",
+    "check:bilingual:complete": "node scripts/check-bilingual.mjs --require-complete",
     "cf-typegen": "wrangler types",
     "deploy": "astro check && astro build && wrangler deploy"
   },

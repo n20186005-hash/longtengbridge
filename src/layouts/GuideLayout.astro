@@ -27,10 +27,30 @@ import { ATTRACTION } from "../data/attraction";
 import { relatedSlugsFor } from "../data/related-guides";
 
 interface Props {
-  guide: CollectionEntry<"guides">;
+  guide: CollectionEntry<"guides"> | CollectionEntry<"guidesEn">;
 }
 
 const { guide } = Astro.props;
+const isEnglish = guide.collection === "guidesEn";
+const homeHref = isEnglish ? "/en/" : "/";
+const localizedPath = isEnglish ? `/en/${guide.data.slug}/` : `/${guide.data.slug}/`;
+const languageCopy = isEnglish ? {
+  breadcrumb: "English guide", essentials: "Jump to essentials", navigate: "Open in Google Maps",
+  weatherTitle: "Check the weather before you go", weatherText: "Review the forecast, mountain fog and afternoon rain before planning your visit.",
+  weatherAction: "Weather and trip planning", photos: "On-site views", photoTitle: "Explore the location from different angles",
+  photoCaption: "Nearby Old Mountain Line scenery", mapTitle: "Plan your visit with Google Maps", sections: "On this page",
+  ready: "Ready to visit?", readyText: "Check your route and live road conditions in Google Maps.", openMap: "Get directions",
+  related: "Further reading", relatedTitle: "Read next", sources: "Sources for this guide",
+  sourcesIntro: "Historical information and place names are based on public sources. Always confirm changeable prices, schedules and access conditions with the relevant operators.",
+} : {
+  breadcrumb: "首頁", essentials: "直接看重點", navigate: "開啟 Google 地圖導航",
+  weatherTitle: "出發前先看龍騰斷橋天氣", weatherText: "即時預報、山區起霧與午後雷雨，以及下雨還能不能去的判斷方式。",
+  weatherAction: "天氣與行程判斷", photos: "實景觀察", photoTitle: "從不同視角認識現場",
+  photoCaption: "周邊舊山線環境參考", mapTitle: "從地圖開始規劃", sections: "本頁重點",
+  ready: "準備出發？", readyText: "先在 Google 地圖確認路線與即時道路狀況。", openMap: "開啟導航",
+  related: "延伸閱讀", relatedTitle: "接著讀這一頁", sources: "本篇資料來源",
+  sourcesIntro: "本篇攻略的歷史、名稱與位置以官方資料為基礎；票價、班次與停車等易變資訊不在頁面寫死，而是提供判斷方式與來源連結。",
+};
 const { Content, headings } = await render(guide);
 const images = {
   hero,
@@ -58,26 +78,26 @@ const mapDestination = guide.data.mapUrl || (guide.data.mapName
 const galleryImages = guide.data.mapName
   ? (guide.data.image === "shengxing" ? [oldLine] : guide.data.image === "oldLineRailbike" ? [stationTunnel] : [])
   : [bridgeBody, bridgeMorning].filter((asset) => asset !== currentImage);
-const canonicalUrl = `https://longtengbridge.com/${guide.data.slug}/`;
+const canonicalUrl = `https://longtengbridge.com${localizedPath}`;
 const attractionId = `${SITE.url}/#attraction`;
 
 // 延伸閱讀：依對應表挑選，標題與摘要直接取自內容集合。
-const allGuides = await getCollection("guides");
+const allGuides = isEnglish ? await getCollection("guidesEn") : await getCollection("guides");
 const relatedGuides = relatedSlugsFor(guide.data.slug)
   .map((slug) => allGuides.find((entry) => entry.data.slug === slug))
-  .filter((entry): entry is CollectionEntry<"guides"> => Boolean(entry));
+  .filter((entry): entry is (typeof allGuides)[number] => entry !== undefined);
 
 const articleSchema = {
   "@context": "https://schema.org",
   "@type": "Article",
   headline: guide.data.title,
   description: guide.data.description,
-  inLanguage: "zh-Hant-TW",
+  inLanguage: isEnglish ? "en" : "zh-Hant-TW",
   mainEntityOfPage: canonicalUrl,
   image: "https://longtengbridge.com/og-cover.jpg",
   author: {
     "@type": "Organization",
-    name: "Longteng Bridge 編輯部",
+    name: isEnglish ? "Longteng Bridge Editorial Team" : "Longteng Bridge 編輯部",
     url: SITE.url,
   },
   publisher: { "@id": `${SITE.url}/#organization` },
@@ -93,8 +113,8 @@ const breadcrumbSchema = {
     {
       "@type": "ListItem",
       position: 1,
-      name: "首頁",
-      item: "https://longtengbridge.com/",
+      name: languageCopy.breadcrumb,
+      item: `https://longtengbridge.com${homeHref}`,
     },
     {
       "@type": "ListItem",
@@ -107,6 +127,7 @@ const breadcrumbSchema = {
 ---
 
 <BaseLayout
+  lang={isEnglish ? "en" : "zh-Hant-TW"}
   title={guide.data.seoTitle}
   description={guide.data.description}
   image="/og-cover.jpg"
@@ -116,9 +137,9 @@ const breadcrumbSchema = {
     <header class="section-shell pt-10 sm:pt-16">
       <nav
         class="mb-7 flex items-center gap-2 text-xs font-bold text-stone"
-        aria-label="麵包屑"
+        aria-label={isEnglish ? "Breadcrumb" : "麵包屑"}
       >
-        <a href="/" class="hover:text-brick-700">首頁</a>
+        <a href={homeHref} class="hover:text-brick-700">{languageCopy.breadcrumb}</a>
         <Icon name="chevron" size={13} />
         <span aria-current="page">{guide.data.eyebrow}</span>
       </nav>
@@ -144,7 +165,7 @@ const breadcrumbSchema = {
               class="inline-flex items-center gap-2 rounded-full bg-brick-100 px-3.5 py-2 text-brick-700"
             >
               <Icon name="compass" size={15} />
-              直接看重點
+              {languageCopy.essentials}
             </a>
             <a
               href={mapDestination}
@@ -153,7 +174,7 @@ const breadcrumbSchema = {
               class="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3.5 py-2 text-white"
             >
               <Icon name="map" size={15} />
-              開啟 Google 地圖導航
+              {languageCopy.navigate}
             </a>
           </div>
         </div>
@@ -161,7 +182,7 @@ const breadcrumbSchema = {
         <figure class="overflow-hidden rounded-[1.75rem] bg-forest-50 shadow-soft">
           <Image
             src={currentImage}
-            alt={`${guide.data.mapName || ATTRACTION.shortNameZh}｜${guide.data.title}實景照片`}
+            alt={isEnglish ? `${guide.data.title}: location photograph` : `${guide.data.mapName || ATTRACTION.shortNameZh}｜${guide.data.title}實景照片`}
             widths={[640, 960, 1280]}
             sizes="(min-width: 1024px) 42vw, 100vw"
             format="avif"
@@ -198,14 +219,14 @@ const breadcrumbSchema = {
             <Icon name="droplet" size={16} />
           </span>
           <span>
-            <strong class="block text-sm font-extrabold text-ink">出發前先看龍騰斷橋天氣</strong>
+            <strong class="block text-sm font-extrabold text-ink">{languageCopy.weatherTitle}</strong>
             <span class="mt-1 block text-xs leading-6 text-stone">
-              即時預報、山區起霧與午後雷雨，以及下雨還能不能去的判斷方式。
+              {languageCopy.weatherText}
             </span>
           </span>
         </span>
         <span class="inline-flex shrink-0 items-center gap-2 text-sm font-black text-brick-700">
-          天氣與行程判斷
+          {languageCopy.weatherAction}
           <Icon name="arrow" size={16} />
         </span>
       </a>
@@ -231,14 +252,14 @@ const breadcrumbSchema = {
           <Content />
         </div>
 
-        <section class="mt-12" aria-label="景點實景照片">
-          <span class="eyebrow">實景觀察</span>
-          <h2 class="editorial-title mb-5 mt-3 text-3xl font-bold text-ink">從不同視角認識現場</h2>
+        <section class="mt-12" aria-label={isEnglish ? "Location photographs" : "景點實景照片"}>
+          <span class="eyebrow">{languageCopy.photos}</span>
+          <h2 class="editorial-title mb-5 mt-3 text-3xl font-bold text-ink">{languageCopy.photoTitle}</h2>
           <div class="grid gap-4 sm:grid-cols-2">
             {galleryImages.map((photo, index) => (
               <figure class="overflow-hidden rounded-2xl bg-white shadow-soft">
-                <Image src={photo} alt={`${guide.data.mapName || "龍騰斷橋"}周邊實景參考照片 ${index + 1}`} widths={[640, 960]} sizes="(min-width: 640px) 40vw, 90vw" class="aspect-[4/3] w-full object-cover" />
-                <figcaption class="px-4 py-3 text-xs leading-5 text-stone">{guide.data.mapName ? "周邊舊山線環境參考" : "紅磚橋體與山線景觀參考"}</figcaption>
+                <Image src={photo} alt={isEnglish ? `Nearby Old Mountain Line photograph ${index + 1}` : `${guide.data.mapName || "龍騰斷橋"}周邊實景參考照片 ${index + 1}`} widths={[640, 960]} sizes="(min-width: 640px) 40vw, 90vw" class="aspect-[4/3] w-full object-cover" />
+                <figcaption class="px-4 py-3 text-xs leading-5 text-stone">{isEnglish ? languageCopy.photoCaption : guide.data.mapName ? "周邊舊山線環境參考" : "紅磚橋體與山線景觀參考"}</figcaption>
               </figure>
             ))}
           </div>
@@ -247,11 +268,11 @@ const breadcrumbSchema = {
         {
           guide.data.mapQuery && (
             <section class="mt-14">
-              <span class="eyebrow">Google 地圖</span>
+              <span class="eyebrow">Google Maps</span>
               <h2 class="editorial-title mb-6 mt-4 text-3xl font-bold text-ink sm:text-4xl">
-                從地圖開始規劃
+                {languageCopy.mapTitle}
               </h2>
-              <GoogleMap query={guide.data.mapQuery} title={`${guide.data.mapName || "龍騰斷橋"} Google 地圖`} locationName={guide.data.mapName} locationUrl={guide.data.mapUrl} />
+              <GoogleMap lang={isEnglish ? "en" : "zh-Hant-TW"} query={guide.data.mapQuery} title={`${guide.data.mapName || "Longteng Bridge"} Google Maps`} locationName={guide.data.mapName} locationUrl={guide.data.mapUrl} />
             </section>
           )
         }
@@ -260,9 +281,9 @@ const breadcrumbSchema = {
       <aside class="lg:sticky lg:top-24 lg:self-start">
         <div class="rounded-2xl border border-black/8 bg-white p-5 shadow-sm">
           <p class="text-xs font-black tracking-[0.14em] text-stone uppercase">
-            本頁重點
+            {languageCopy.sections}
           </p>
-          <nav class="mt-4 grid gap-1" aria-label="本頁章節">
+          <nav class="mt-4 grid gap-1" aria-label={isEnglish ? "Page sections" : "本頁章節"}>
             {
               headings
                 .filter((heading) => heading.depth === 2)
@@ -281,9 +302,9 @@ const breadcrumbSchema = {
 
         <div class="mt-4 rounded-2xl bg-brick-600 p-5 text-white">
           <Icon name="map" size={22} />
-          <p class="mt-4 font-extrabold">準備出發？</p>
+          <p class="mt-4 font-extrabold">{languageCopy.ready}</p>
           <p class="mt-2 text-sm leading-6 text-white/72">
-            先在 Google 地圖確認路線與即時道路狀況。
+            {languageCopy.readyText}
           </p>
           <a
             href={mapDestination}
@@ -291,7 +312,7 @@ const breadcrumbSchema = {
             rel="noopener"
             class="mt-4 inline-flex items-center gap-2 text-sm font-black"
           >
-            開啟導航 <Icon name="arrow" size={16} />
+            {languageCopy.openMap} <Icon name="arrow" size={16} />
           </a>
         </div>
       </aside>
@@ -300,15 +321,15 @@ const breadcrumbSchema = {
     {
       relatedGuides.length > 0 && (
         <section class="section-shell mt-4 pb-4">
-          <span class="eyebrow">延伸閱讀</span>
+          <span class="eyebrow">{languageCopy.related}</span>
           <h2 class="editorial-title mb-6 mt-4 text-3xl font-bold text-ink sm:text-4xl">
-            接著讀這一頁
+            {languageCopy.relatedTitle}
           </h2>
           <ul class="grid gap-3 sm:grid-cols-3">
             {relatedGuides.map((entry) => (
               <li class="flex">
                 <a
-                  href={`/${entry.data.slug}/`}
+                  href={`${isEnglish ? "/en" : ""}/${entry.data.slug}/`}
                   class="flex h-full flex-col rounded-2xl border border-black/8 bg-white p-5 shadow-soft transition hover:border-brick-300"
                 >
                   <span class="text-[0.66rem] font-black tracking-[0.14em] text-brick-700 uppercase">
@@ -330,7 +351,8 @@ const breadcrumbSchema = {
   </article>
 
   <SourcesSection
-    heading="本篇資料來源"
-    intro="本篇攻略的歷史、名稱與位置以官方資料為基礎；票價、班次與停車等易變資訊不在頁面寫死，而是提供判斷方式與來源連結。"
+    lang={isEnglish ? "en" : "zh-Hant-TW"}
+    heading={languageCopy.sources}
+    intro={languageCopy.sourcesIntro}
   />
 </BaseLayout>
